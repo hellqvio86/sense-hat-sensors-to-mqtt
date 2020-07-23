@@ -137,10 +137,6 @@ if __name__ == "__main__":
     
     setup_logger(debug=config['debug'])
 
-    LOGGER.info(
-        f"{args.email}, {args.api_key}, {args.user_password}, {args.network_password}"
-    )
-
     try:
         asyncio.run(
             main(
