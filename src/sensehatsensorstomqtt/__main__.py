@@ -105,7 +105,7 @@ if __name__ == "__main__":
 
     config = parse_config()
 
-    if args.user:
+    if args.username:
         config['username'] = args.username
     
     if args.password:
