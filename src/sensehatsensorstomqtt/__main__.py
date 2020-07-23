@@ -85,7 +85,7 @@ def send_sensor_data():
     LOGGER.info('Disconnected')
 
 
-async def main(*, sslcontext=False):
+def main(*, sslcontext=False):
     """Main function."""
     LOGGER.info("Starting Sense Hat Sensors to MQTT")
 
@@ -94,7 +94,12 @@ async def main(*, sslcontext=False):
 
     msh.add_job(job)
 
-    await msh.start()
+    loop = asyncio.get_event_loop()
+
+    try:
+        loop.run_until_complete(msh.start())
+    except KeyboardInterrupt:
+        print('exit')
 
 
 if __name__ == "__main__":
@@ -138,10 +143,4 @@ if __name__ == "__main__":
 
     setup_logger(debug=CONFIG['debug'])
 
-    try:
-        asyncio.run(
-            main(
-            )
-        )
-    except KeyboardInterrupt:
-        pass
+    main()
