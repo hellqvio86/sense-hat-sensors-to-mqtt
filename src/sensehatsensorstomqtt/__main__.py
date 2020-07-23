@@ -94,6 +94,13 @@ async def send_sensor_data():
 
     LOGGER.info('Disconnected')
 
+    sense.show_message(f"{msg['pressure']}.3 {msg['unit_of_pressurey']}")
+    await asyncio.sleep(5)
+    sense.show_message(f"{msg['humidity']}.3 {msg['unit_of_humidity']}")
+    await asyncio.sleep(5)
+    sense.show_message(f"{msg['temperature']}.3 {msg['unit_of_temperature']}")
+
+
 
 def main(*, sslcontext=False):
     """Main function."""
@@ -101,9 +108,7 @@ def main(*, sslcontext=False):
 
     msh = Scheduler(locale='sv_SE')
     job = CronJob(name='send_sensor_data').every(30).second.go(send_sensor_data)
-    job2 = CronJob(name='test', run_total=3).every(30).second.go(test, (1, 2, 3), name=123)
     msh.add_job(job)
-    msh.add_job(job2)
 
     loop = asyncio.get_event_loop()
 
@@ -112,16 +117,6 @@ def main(*, sslcontext=False):
     except KeyboardInterrupt:
         print('exit')
 
-
-async def test(*args, **kwargs):
-    LOGGER.info(f"args{args}, kwargs={kwargs}")
-    print(f"args{args}, kwargs={kwargs}")
-
-
-def tt(*args, **kwargs):
-    LOGGER.info(f"args{args}, kwargs={kwargs}")
-    print(f"args{args}, kwargs={kwargs}")
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--username", type=str, required=False)
@@ -129,10 +124,14 @@ if __name__ == "__main__":
     parser.add_argument("--host", type=str, required=False)
     parser.add_argument("--port", type=str, required=False)
     parser.add_argument("--topics", type=str, required=False)
+    parser.add_argument("--config_file", type=str, required=False)
     parser.add_argument("-D", "--debug", action="store_true")
     args = parser.parse_args()
 
-    CONFIG = parse_config()
+    if args.config_file:
+        CONFIG = parse_config(config_file=args.config_file)
+    else:
+        CONFIG = parse_config()
 
     if args.username:
         CONFIG['username'] = args.username
