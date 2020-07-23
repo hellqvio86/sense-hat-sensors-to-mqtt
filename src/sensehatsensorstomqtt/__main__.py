@@ -16,6 +16,7 @@ from async_cron.schedule import Scheduler
 sys.path.append(os.path.split(os.path.dirname(sys.argv[0]))[0])
 
 LOGGER = logging.getLogger(__name__)
+CONFIG = {}
 
 def parse_config(config_file='config.yaml'):
     config = {}
@@ -49,9 +50,10 @@ def setup_logger(*, debug=False):
 
 
 @asyncio.coroutine
-def send_sensor_data(host, username, password, port, topics):
+def send_sensor_data(*, host=CONFIG['host'], username=CONFIG['username'], password=CONFIG['password'], port=CONFIG['port'], topics=CONFIG['topics']):
     sense = SenseHat()
     msg = {}
+
 
     msg['temperature'] = sense.get_temperature()
     msg['humidity'] = sense.get_humidity()
@@ -78,12 +80,12 @@ def send_sensor_data(host, username, password, port, topics):
     logger.info('Disconnected')
 
 
-async def main(*, username, password, host, topics, port=1883, sslcontext=False):
+async def main(*, sslcontext=False):
     """Main function."""
     LOGGER.info("Starting Sense Hat Sensors to MQTT")
 
     msh = Scheduler(locale='sv_SE')
-    job = CronJob(name='minute').every(1).minute.go(send_sensor_data, host, username, password, port, topics)
+    job = CronJob(name='minute').every(1).minute.go(send_sensor_data)
 
     msh.add_job(job)
 
@@ -102,42 +104,37 @@ if __name__ == "__main__":
     parser.add_argument("-D", "--debug", action="store_true")
     args = parser.parse_args()
 
-    config = parse_config()
+    CONFIG = parse_config()
 
     if args.username:
-        config['username'] = args.username
+        CONFIG['username'] = args.username
     
     if args.password:
-        config['password'] = args.password
+        CONFIG['password'] = args.password
     
     if args.host:
-        config['host'] = args.host
+        CONFIG['host'] = args.host
     
     if args.port:
-        config['port'] = args.port
+        CONFIG['port'] = args.port
 
     if args.debug:
-        config['debug'] = True
+        CONFIG['debug'] = True
 
     if args.topics:
-        config['topics'] = [item.strip() for item in args.list.split(',')]
+        CONFIG['topics'] = [item.strip() for item in args.list.split(',')]
 
     if 'debug' not in config:
-        config['debug'] = False
+        CONFIG['debug'] = False
 
     if 'port' not in config:
-        config['port'] = 1883
+        CONFIG['port'] = 1883
     
-    setup_logger(debug=config['debug'])
+    setup_logger(debug=CONFIG['debug'])
 
     try:
         asyncio.run(
             main(
-                username=config['username'],
-                password=config['password'],
-                host=config['host'],
-                topics=config['topics'],
-                port=config['port']
             )
         )
     except KeyboardInterrupt:
