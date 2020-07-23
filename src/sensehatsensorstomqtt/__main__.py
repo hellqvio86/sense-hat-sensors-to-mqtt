@@ -15,12 +15,6 @@ from async_cron.schedule import Scheduler
 
 sys.path.append(os.path.split(os.path.dirname(sys.argv[0]))[0])
 
-try:
-    import aiocasambi
-except ModuleNotFoundError as err:
-    pprint.pprint(sys.path)
-    raise err
-
 LOGGER = logging.getLogger(__name__)
 
 def parse_config(config_file='config.yaml'):
