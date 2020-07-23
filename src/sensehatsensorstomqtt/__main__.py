@@ -103,7 +103,7 @@ def main(*, sslcontext=False):
 
 
 def tt(*args, **kwargs):
-    print(args, kwargs)
+    print(f"args{args}, kwargs={kwargs}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
