@@ -1,6 +1,5 @@
 import argparse
 import asyncio
-import async_timeout
 import logging
 import logging.handlers
 import yaml
