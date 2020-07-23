@@ -49,7 +49,7 @@ def setup_logger(*, debug=False):
 
 
 @asyncio.coroutine
-def send_sensor_data(host, user, password, port, topics):
+def send_sensor_data(host, username, password, port, topics):
     sense = SenseHat()
     msg = {}
 
@@ -57,7 +57,7 @@ def send_sensor_data(host, user, password, port, topics):
     msg['humidity'] = sense.get_humidity()
     msg['pressure'] = sense.get_pressure()
 
-    uri = f"mqtt://{user}:{password}@{host}:{port}"
+    uri = f"mqtt://{username}:{password}@{host}:{port}"
 
 
     C = MQTTClient()
@@ -77,12 +77,12 @@ def send_sensor_data(host, user, password, port, topics):
     logger.info('Disconnected')
 
 
-async def main(*, user, password, host, topics, port=1883, sslcontext=False):
+async def main(*, username, password, host, topics, port=1883, sslcontext=False):
     """Main function."""
     LOGGER.info("Starting Sense Hat Sensors to MQTT")
 
     msh = Scheduler()
-    job = CronJob(name='minute').every(1).minute.go(send_sensor_data, host, user, password, port, topics)
+    job = CronJob(name='minute').every(1).minute.go(send_sensor_data, host, username, password, port, topics)
 
     msh.add_job(job)
 
@@ -95,7 +95,7 @@ async def main(*, user, password, host, topics, port=1883, sslcontext=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--user", type=str, required=False)
+    parser.add_argument("--username", type=str, required=False)
     parser.add_argument("--password", type=str, required=False)
     parser.add_argument("--host", type=str, required=False)
     parser.add_argument("--port", type=str, required=False)
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     config = parse_config()
 
     if args.user:
-        config['user'] = args.user
+        config['username'] = args.username
     
     if args.password:
         config['password'] = args.password
@@ -134,7 +134,7 @@ if __name__ == "__main__":
     try:
         asyncio.run(
             main(
-                user=config['user'],
+                username=config['username'],
                 password=config['password'],
                 host=config['host'],
                 topics=config['topics'],
