@@ -129,10 +129,10 @@ if __name__ == "__main__":
     if args.topics:
         CONFIG['topics'] = [item.strip() for item in args.list.split(',')]
 
-    if 'debug' not in config:
+    if 'debug' not in CONFIG:
         CONFIG['debug'] = False
 
-    if 'port' not in config:
+    if 'port' not in CONFIG:
         CONFIG['port'] = 1883
     
 
