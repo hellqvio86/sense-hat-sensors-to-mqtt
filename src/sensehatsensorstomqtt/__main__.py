@@ -94,8 +94,6 @@ async def main(*, sslcontext=False):
 
     msh.add_job(job)
 
-    loop = asyncio.get_event_loop()
-
     await msh.start()
 
 
