@@ -50,10 +50,15 @@ def setup_logger(*, debug=False):
 
 
 @asyncio.coroutine
-def send_sensor_data(*, host=CONFIG['host'], username=CONFIG['username'], password=CONFIG['password'], port=CONFIG['port'], topics=CONFIG['topics']):
+def send_sensor_data():
     sense = SenseHat()
     msg = {}
 
+    host=CONFIG['host']
+    username=CONFIG['username']
+    password=CONFIG['password']
+    port=CONFIG['port']
+    topics=CONFIG['topics']
 
     msg['temperature'] = sense.get_temperature()
     msg['humidity'] = sense.get_humidity()
