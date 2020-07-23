@@ -68,7 +68,8 @@ async def send_sensor_data():
     LOGGER.info(f"Connecting to {uri}")
 
     C = MQTTClient()
-    yield from C.connect(uri)
+    
+    C.connect(uri)
 
     LOGGER.info(f"Connected to {uri}")
 
@@ -77,9 +78,12 @@ async def send_sensor_data():
     for topic in topics:
         data = json.dumps(msg)
         tasks.append(asyncio.ensure_future(C.publish(topic, data)))
-    yield from asyncio.wait(tasks)
+    
+    asyncio.wait(tasks)
+    
     LOGGER.info("messages published")
-    yield from C.disconnect()
+
+    C.disconnect()
 
     LOGGER.info('Disconnected')
 
