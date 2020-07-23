@@ -70,7 +70,7 @@ async def send_sensor_data():
 
     C = MQTTClient()
     
-    C.connect(uri)
+    await C.connect(uri)
 
     LOGGER.info(f"Connected to {uri}")
 
@@ -85,7 +85,7 @@ async def send_sensor_data():
     
     LOGGER.info("messages published")
 
-    C.disconnect()
+    await C.disconnect()
 
     LOGGER.info('Disconnected')
 
