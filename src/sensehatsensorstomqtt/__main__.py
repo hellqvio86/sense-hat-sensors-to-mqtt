@@ -9,6 +9,7 @@ import os
 import sense_hat
 import json
 
+from io import StringIO
 from sense_hat import SenseHat
 from hbmqtt.client import MQTTClient
 from async_cron.job import CronJob
