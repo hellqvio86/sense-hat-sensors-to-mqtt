@@ -131,15 +131,11 @@ if __name__ == "__main__":
     
     setup_logger(debug=config['debug'])
 
-    try:
-        asyncio.run(
-            main(
-                username=config['username'],
-                password=config['password'],
-                host=config['host'],
-                topics=config['topics'],
-                port=config['port']
-            )
-        )
-    except KeyboardInterrupt:
-        pass
+
+    main(
+        username=config['username'],
+        password=config['password'],
+        host=config['host'],
+        topics=config['topics'],
+        port=config['port']
+    )
