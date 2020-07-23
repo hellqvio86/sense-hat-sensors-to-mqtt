@@ -7,6 +7,7 @@ import pprint
 import sys
 import os
 import sense_hat
+import json
 
 from sense_hat import SenseHat
 from hbmqtt.client import MQTTClient
