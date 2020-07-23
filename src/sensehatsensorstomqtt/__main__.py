@@ -94,11 +94,11 @@ async def send_sensor_data():
 
     LOGGER.info('Disconnected')
 
-    sense.show_message(f"{msg['pressure']}.3 {msg['unit_of_pressurey']}")
+    sense.show_message(f"{msg['pressure']:.2f} {msg['unit_of_pressurey']}")
     await asyncio.sleep(5)
-    sense.show_message(f"{msg['humidity']}.3 {msg['unit_of_humidity']}")
+    sense.show_message(f"{msg['humidity']:.2f} {msg['unit_of_humidity']}")
     await asyncio.sleep(5)
-    sense.show_message(f"{msg['temperature']}.3 {msg['unit_of_temperature']}")
+    sense.show_message(f"{msg['temperature']:.2f} {msg['unit_of_temperature']}")
 
 
 
