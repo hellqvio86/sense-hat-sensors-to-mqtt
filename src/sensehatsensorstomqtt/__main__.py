@@ -81,7 +81,7 @@ async def main(*, username, password, host, topics, port=1883, sslcontext=False)
     """Main function."""
     LOGGER.info("Starting Sense Hat Sensors to MQTT")
 
-    msh = Scheduler()
+    msh = Scheduler(locale='sv_SE')
     job = CronJob(name='minute').every(1).minute.go(send_sensor_data, host, username, password, port, topics)
 
     msh.add_job(job)
