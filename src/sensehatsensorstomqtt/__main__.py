@@ -49,6 +49,7 @@ def setup_logger(*, debug=False):
         root.setLevel(logging.DEBUG)
 
 
+@asyncio.coroutine
 def send_sensor_data():
     sense = SenseHat()
     msg = {}
@@ -89,8 +90,8 @@ def main(*, sslcontext=False):
     LOGGER.info("Starting Sense Hat Sensors to MQTT")
 
     msh = Scheduler(locale='sv_SE')
-    job = CronJob(name='minute').every(1).minute.go(send_sensor_data)
-    job2 = CronJob(name='minute').every(1).minute.go(tt, (5), age=99)
+    job = CronJob(name='send_sensor_data').every(30).second.go(send_sensor_data)
+    job2 = CronJob(name='test', run_total=3).every(30).second.go(test, (1, 2, 3), name=123)
     msh.add_job(job)
     msh.add_job(job2)
 
@@ -102,7 +103,13 @@ def main(*, sslcontext=False):
         print('exit')
 
 
+async def test(*args, **kwargs):
+    LOGGER.info(f"args{args}, kwargs={kwargs}")
+    print(f"args{args}, kwargs={kwargs}")
+
+
 def tt(*args, **kwargs):
+    LOGGER.info(f"args{args}, kwargs={kwargs}")
     print(f"args{args}, kwargs={kwargs}")
 
 if __name__ == "__main__":
