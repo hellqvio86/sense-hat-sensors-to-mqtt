@@ -78,6 +78,7 @@ async def send_sensor_data():
     
     for topic in topics:
         data = json.dumps(msg)
+        LOGGER.info(f"Publishing msg: {msg} to topic: {topic}")
         tasks.append(asyncio.ensure_future(C.publish(topic, data)))
     
     asyncio.wait(tasks)
