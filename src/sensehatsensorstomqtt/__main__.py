@@ -130,6 +130,9 @@ if __name__ == "__main__":
     if 'port' not in config:
         CONFIG['port'] = 1883
     
+
+    print(f"config: {CONFIG}")
+
     setup_logger(debug=CONFIG['debug'])
 
     try:
