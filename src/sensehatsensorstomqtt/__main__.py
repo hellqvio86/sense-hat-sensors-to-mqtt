@@ -88,10 +88,8 @@ async def main(*, username, password, host, topics, port=1883, sslcontext=False)
 
     loop = asyncio.get_event_loop()
 
-    try:
-        loop.run_until_complete(msh.start())
-    except KeyboardInterrupt:
-        print('exit')
+    msh.start()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -131,11 +129,15 @@ if __name__ == "__main__":
     
     setup_logger(debug=config['debug'])
 
-
-    await main(
-        username=config['username'],
-        password=config['password'],
-        host=config['host'],
-        topics=config['topics'],
-        port=config['port']
-    )
+    try:
+        asyncio.run(
+            main(
+                username=config['username'],
+                password=config['password'],
+                host=config['host'],
+                topics=config['topics'],
+                port=config['port']
+            )
+        )
+    except KeyboardInterrupt:
+        pass
