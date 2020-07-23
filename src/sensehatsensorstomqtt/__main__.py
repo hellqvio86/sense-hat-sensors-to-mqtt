@@ -49,7 +49,6 @@ def setup_logger(*, debug=False):
         root.setLevel(logging.DEBUG)
 
 
-@asyncio.coroutine
 def send_sensor_data():
     sense = SenseHat()
     msg = {}
