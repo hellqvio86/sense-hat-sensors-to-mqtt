@@ -59,6 +59,7 @@ def send_sensor_data(host, username, password, port, topics):
 
     uri = f"mqtt://{username}:{password}@{host}:{port}"
 
+    logger.info(f"Connecting to {uri}")
 
     C = MQTTClient()
     yield from C.connect(uri)
