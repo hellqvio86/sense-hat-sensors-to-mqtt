@@ -90,8 +90,8 @@ def main(*, sslcontext=False):
     LOGGER.info("Starting Sense Hat Sensors to MQTT")
 
     msh = Scheduler(locale='sv_SE')
-    job = CronJob(name='minute').every(1).minute.go(send_sensor_data)
-
+    #job = CronJob(name='minute').every(1).minute.go(send_sensor_data)
+    job = CronJob(name='minute').every(1).minute.go(tt, (5), age=99)
     msh.add_job(job)
 
     loop = asyncio.get_event_loop()
@@ -101,6 +101,9 @@ def main(*, sslcontext=False):
     except KeyboardInterrupt:
         print('exit')
 
+
+def tt(*args, **kwargs):
+    print(args, kwargs)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
