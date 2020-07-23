@@ -63,7 +63,7 @@ async def send_sensor_data():
     msg['temperature'] = sense.get_temperature()
     msg['humidity'] = sense.get_humidity()
     msg['pressure'] = sense.get_pressure()
-    msg['time'] =  datetime.datetime.now().astimezone().strftime("%Y-%m-%dT%H:%M:%S.%f %z")
+    msg['time_utc'] = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")
 
     uri = f"mqtt://{username}:{password}@{host}:{port}"
 
