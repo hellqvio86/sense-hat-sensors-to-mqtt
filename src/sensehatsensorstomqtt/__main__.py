@@ -6,10 +6,8 @@ import yaml
 import pprint
 import sys
 import os
-import sense_hat
 import json
 
-from io import StringIO
 from sense_hat import SenseHat
 from hbmqtt.client import MQTTClient
 from async_cron.job import CronJob
@@ -78,11 +76,10 @@ async def send_sensor_data():
     tasks = []
     
     for topic in topics:
-        io = StringIO()
-        json.dump(msg, io)
+        data = json.dumps(msg).encode('utf-8')
 
         LOGGER.info(f"Publishing msg: {msg} to topic: {topic}")
-        tasks.append(asyncio.ensure_future(C.publish(topic, io)))
+        tasks.append(asyncio.ensure_future(C.publish(topic, data)))
     
     await asyncio.wait(tasks)
     
