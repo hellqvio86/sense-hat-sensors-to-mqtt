@@ -66,12 +66,12 @@ def send_sensor_data():
 
     uri = f"mqtt://{username}:{password}@{host}:{port}"
 
-    logger.info(f"Connecting to {uri}")
+    LOGGER.info(f"Connecting to {uri}")
 
     C = MQTTClient()
     yield from C.connect(uri)
 
-    logger.info(f"Connected to {uri}")
+    LOGGER.info(f"Connected to {uri}")
 
     tasks = []
     
@@ -79,10 +79,10 @@ def send_sensor_data():
         data = json.dumps(msg)
         tasks.append(asyncio.ensure_future(C.publish(topic, data)))
     yield from asyncio.wait(tasks)
-    logger.info("messages published")
+    LOGGER.info("messages published")
     yield from C.disconnect()
 
-    logger.info('Disconnected')
+    LOGGER.info('Disconnected')
 
 
 async def main(*, sslcontext=False):
