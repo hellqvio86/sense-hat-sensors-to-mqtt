@@ -132,7 +132,7 @@ if __name__ == "__main__":
     setup_logger(debug=config['debug'])
 
 
-    main(
+    await main(
         username=config['username'],
         password=config['password'],
         host=config['host'],
