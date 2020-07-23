@@ -88,7 +88,7 @@ async def main(*, username, password, host, topics, port=1883, sslcontext=False)
 
     loop = asyncio.get_event_loop()
 
-    msh.start()
+    await msh.start()
 
 
 if __name__ == "__main__":
