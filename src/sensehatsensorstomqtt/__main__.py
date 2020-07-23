@@ -63,9 +63,9 @@ async def send_sensor_data():
     msg['temperature'] = sense.get_temperature()
     msg['unit_of_temperature'] = 'C'
     msg['humidity'] = sense.get_humidity()
-    msg['unit_of_humidity'] = '%rH'
+    msg['unit_of_humidity'] = '%'
     msg['pressure'] = sense.get_pressure()
-    msg['unit_of_pressurey'] = 'mbar'
+    msg['unit_of_pressure'] = 'mbar'
     msg['time_utc'] = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")
 
     uri = f"mqtt://{username}:{password}@{host}:{port}"
@@ -94,7 +94,7 @@ async def send_sensor_data():
 
     LOGGER.info('Disconnected')
 
-    sense.show_message(f"{msg['pressure']:.2f} {msg['unit_of_pressurey']}")
+    sense.show_message(f"{msg['pressure']:.2f} {msg['unit_of_pressure']}")
     await asyncio.sleep(5)
     sense.show_message(f"{msg['humidity']:.2f} {msg['unit_of_humidity']}")
     await asyncio.sleep(5)
