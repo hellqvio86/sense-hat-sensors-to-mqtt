@@ -9,6 +9,7 @@ import os
 import json
 import datetime
 
+from random import randint
 from sense_hat import SenseHat
 from hbmqtt.client import MQTTClient
 from async_cron.job import CronJob
@@ -94,11 +95,15 @@ async def send_sensor_data():
 
     LOGGER.info('Disconnected')
 
-    sense.show_message(f"{msg['pressure']:.2f} {msg['unit_of_pressure']}")
+
+    r1 = (randint(0,255), randint(0,255), randint(0,255))
+    r2 = (randint(0,255), randint(0,255), randint(0,255))
+    r3 = (randint(0,255), randint(0,255), randint(0,255))
+    sense.show_message(f"{msg['pressure']:.2f} {msg['unit_of_pressure']}", text_colour=r1)
     await asyncio.sleep(5)
-    sense.show_message(f"{msg['humidity']:.2f} {msg['unit_of_humidity']}")
+    sense.show_message(f"{msg['humidity']:.2f} {msg['unit_of_humidity']}", text_colour=r2)
     await asyncio.sleep(5)
-    sense.show_message(f"{msg['temperature']:.2f} {msg['unit_of_temperature']}")
+    sense.show_message(f"{msg['temperature']:.2f} {msg['unit_of_temperature']}", text_colour=r3)
 
 
 
