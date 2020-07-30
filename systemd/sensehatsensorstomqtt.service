@@ -6,8 +6,11 @@
 # Human readable name of the unit
 Description=Sense hat sensors to MQTT
 
+After=multi-user.target
+Conflicts=getty@tty1.service
 
 [Service]
+Type=simple
 
 # Command to execute when the service is started
 #ExecStart=/home/pi/git/sense-hat-sensors-to-mqtt/run.sh
@@ -20,8 +23,7 @@ Environment=PYTHONUNBUFFERED=1
 # Automatically restart the service if it crashes
 Restart=on-failure
 
-# Our service will notify systemd once it is up and running
-Type=notify
+StandardInput=tty-force
 
 # Use a dedicated user to run our service
 User=pi

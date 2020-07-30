@@ -26,7 +26,8 @@ setup(
           'sense-hat',
           'hbmqtt',
           'pyyaml',
-          'async-cron'
+          'async-cron',
+          'daemon'
       ],
   extras_require={
         'tests': [
