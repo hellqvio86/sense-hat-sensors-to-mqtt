@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 if [ ! -d "/var/log/sensehatsensorstomqtt" ]; then
   # Control will enter here if $DIRECTORY doesn't exist.
   mkdir /var/log/sensehatsensorstomqtt
-  chown pi:pi sensehatsensorstomqtt
+  chown pi:pi /var/log/sensehatsensorstomqtt
 fi
 
 echo "Installing systemd script"
