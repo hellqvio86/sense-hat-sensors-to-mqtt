@@ -4,7 +4,7 @@
 [Unit]
 
 # Human readable name of the unit
-Description=Python Demo Service
+Description=Sense hat sensors to MQTT
 
 
 [Service]
