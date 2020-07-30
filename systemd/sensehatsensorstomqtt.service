@@ -24,6 +24,7 @@ Type=notify
 
 # Use a dedicated user to run our service
 User=pi
+Group=pi
 
 
 [Install]
