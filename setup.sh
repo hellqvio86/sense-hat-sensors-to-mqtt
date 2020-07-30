@@ -8,3 +8,5 @@ cp systemd/sensehatsensorstomqtt.service /etc/systemd/system/sensehatsensorstomq
 echo "Reloading systemd"
 systemctl --user daemon-reload
 systemctl daemon-reload
+
+systemctl start sensehatsensorstomqtt
