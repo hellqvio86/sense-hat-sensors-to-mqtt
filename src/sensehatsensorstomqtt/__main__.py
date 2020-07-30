@@ -53,23 +53,30 @@ def parse_config(config_file='config.yaml'):
     return config
 
 
-def setup_logger(*, debug=False, log_file='/var/log/sensehatsensorstomqtt/sensehatsensorstomqtt.log'):
+def setup_logger(*, debug=False, log_file='/var/log/sensehatsensorstomqtt/sensehatsensorstomqtt.log', daemon=False):
     root = logging.getLogger()
+    file_handler = None
+    max_bytes = 3 * 10**6
+    backup_count = 10
     formatter = logging.Formatter('%(asctime)s %(process)d %(processName)-10s %(name)-8s %(funcName)-8s %(levelname)-8s %(message)s')
 
     if debug:
-        max_bytes = 3 * 10**6
-        backup_count = 10
         file_handler = logging.handlers.RotatingFileHandler(log_file, 'a', max_bytes, backup_count)
         file_handler.setFormatter(formatter)
-        root.addHandler(file_handler)
 
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
-    root.addHandler(console_handler)
+    if daemon:
+        file_handler = logging.handlers.RotatingFileHandler(log_file, 'a', max_bytes, backup_count)
+        file_handler.setFormatter(formatter)
+    else:
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(formatter)
+        root.addHandler(console_handler)
 
     if debug:
         root.setLevel(logging.DEBUG)
+    
+    if file_handler:
+        root.addHandler(file_handler)
 
 
 async def send_sensor_data():
@@ -153,6 +160,7 @@ if __name__ == "__main__":
     parser.add_argument("--config_file", type=str, required=False)
     parser.add_argument("--log_file", type=str, required=False)
     parser.add_argument("-D", "--debug", action="store_true")
+    parser.add_argument("--daemon", action="store_true")
     args = parser.parse_args()
 
     if args.config_file:
@@ -179,6 +187,11 @@ if __name__ == "__main__":
         CONFIG['log_file'] = args.log_file
     else:
         CONFIG['log_file'] = '/var/log/sensehatsensorstomqtt/sensehatsensorstomqtt.log'
+    
+    if args.daemon:
+        CONFIG['daemon'] = args.daemon
+    elif 'daemon' not in CONFIG:
+        CONFIG['daemon'] = False
 
     if args.topics:
         CONFIG['topics'] = [item.strip() for item in args.list.split(',')]
@@ -192,6 +205,6 @@ if __name__ == "__main__":
 
     print(f"config: {CONFIG}")
 
-    setup_logger(debug=CONFIG['debug'], log_file=CONFIG['log_file'])
+    setup_logger(debug=CONFIG['debug'], log_file=CONFIG['log_file'], daemon = CONFIG['daemon'])
 
     main()
