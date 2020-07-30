@@ -27,7 +27,6 @@ setup(
           'hbmqtt',
           'pyyaml',
           'async-cron',
-          'daemon'
       ],
   extras_require={
         'tests': [

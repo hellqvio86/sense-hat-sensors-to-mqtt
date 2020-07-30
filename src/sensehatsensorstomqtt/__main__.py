@@ -53,14 +53,14 @@ def parse_config(config_file='config.yaml'):
     return config
 
 
-def setup_logger(*, debug=False):
+def setup_logger(*, debug=False, log_file='/var/log/sensehatsensorstomqtt.log'):
     root = logging.getLogger()
     formatter = logging.Formatter('%(asctime)s %(process)d %(processName)-10s %(name)-8s %(funcName)-8s %(levelname)-8s %(message)s')
 
     if debug:
         max_bytes = 3 * 10**6
         backup_count = 10
-        file_handler = logging.handlers.RotatingFileHandler('sensehat.log', 'a', max_bytes, backup_count)
+        file_handler = logging.handlers.RotatingFileHandler(log_file, 'a', max_bytes, backup_count)
         file_handler.setFormatter(formatter)
         root.addHandler(file_handler)
 
@@ -151,6 +151,7 @@ if __name__ == "__main__":
     parser.add_argument("--port", type=str, required=False)
     parser.add_argument("--topics", type=str, required=False)
     parser.add_argument("--config_file", type=str, required=False)
+    parser.add_argument("--log_file", type=str, required=False)
     parser.add_argument("-D", "--debug", action="store_true")
     args = parser.parse_args()
 
@@ -174,6 +175,11 @@ if __name__ == "__main__":
     if args.debug:
         CONFIG['debug'] = True
 
+    if args.log_file:
+        CONFIG['log_file'] = args.log_file
+    else:
+        CONFIG['log_file'] = '/var/log/sensehatsensorstomqtt.log'
+
     if args.topics:
         CONFIG['topics'] = [item.strip() for item in args.list.split(',')]
 
@@ -186,6 +192,6 @@ if __name__ == "__main__":
 
     print(f"config: {CONFIG}")
 
-    setup_logger(debug=CONFIG['debug'])
+    setup_logger(debug=CONFIG['debug'], log_file=CONFIG['log_file'])
 
     main()
