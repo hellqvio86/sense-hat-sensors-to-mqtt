@@ -53,7 +53,7 @@ def parse_config(config_file='config.yaml'):
     return config
 
 
-def setup_logger(*, debug=False, log_file='/var/log/sensehatsensorstomqtt.log'):
+def setup_logger(*, debug=False, log_file='/var/log/sensehatsensorstomqtt/sensehatsensorstomqtt.log'):
     root = logging.getLogger()
     formatter = logging.Formatter('%(asctime)s %(process)d %(processName)-10s %(name)-8s %(funcName)-8s %(levelname)-8s %(message)s')
 
@@ -178,7 +178,7 @@ if __name__ == "__main__":
     if args.log_file:
         CONFIG['log_file'] = args.log_file
     else:
-        CONFIG['log_file'] = '/var/log/sensehatsensorstomqtt.log'
+        CONFIG['log_file'] = '/var/log/sensehatsensorstomqtt/sensehatsensorstomqtt.log'
 
     if args.topics:
         CONFIG['topics'] = [item.strip() for item in args.list.split(',')]
