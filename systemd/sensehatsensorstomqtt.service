@@ -10,7 +10,8 @@ Description=Sense hat sensors to MQTT
 [Service]
 
 # Command to execute when the service is started
-ExecStart=/home/pi/git/sense-hat-sensors-to-mqtt/run.sh
+#ExecStart=/home/pi/git/sense-hat-sensors-to-mqtt/run.sh
+ExecStart=python3 /home/pi/git/sense-hat-sensors-to-mqtt/src/sensehatsensorstomqtt/__main__.py
 
 # Disable Python's buffering of STDOUT and STDERR, so that output from the
 # service shows up immediately in systemd's logs
