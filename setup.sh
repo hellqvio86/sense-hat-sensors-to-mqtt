@@ -16,3 +16,4 @@ systemctl --user daemon-reload
 systemctl daemon-reload
 
 systemctl start sensehatsensorstomqtt
+systemctl enable sensehatsensorstomqtt
