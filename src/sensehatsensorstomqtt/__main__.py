@@ -9,7 +9,7 @@ import os
 import json
 import datetime
 
-from daemon import Daemonizer
+from daemonizer import Daemonizer
 from random import randint
 from sense_hat import SenseHat
 from hbmqtt.client import MQTTClient
