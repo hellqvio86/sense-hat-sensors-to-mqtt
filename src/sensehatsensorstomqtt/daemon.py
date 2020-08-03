@@ -2,7 +2,7 @@ import os
 import sys
 
 
-class Damonizer(object):
+class Daemonizer(object):
     def __init__(self):
         '''
         Empty
@@ -64,7 +64,7 @@ class Damonizer(object):
         return
 
 def start():
-    worker = Damonizer()
+    worker = Daemonizer()
     worker.run()
 
     return

@@ -9,7 +9,7 @@ import os
 import json
 import datetime
 
-from daemon import Damonizer
+from daemon import Daemonizer
 from random import randint
 from sense_hat import SenseHat
 from hbmqtt.client import MQTTClient
@@ -208,7 +208,7 @@ if __name__ == "__main__":
         print(f"config: {CONFIG}")
     
     if CONFIG['daemon']:
-        Damonizer()
+        Daemonizer()
 
     setup_logger(debug=CONFIG['debug'], log_file=CONFIG['log_file'], daemon = CONFIG['daemon'])
 
