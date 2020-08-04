@@ -22,6 +22,11 @@ setup(
   download_url = 'https://github.com/hellqvio86/sense-hat-sensors-to-mqtt/archive/v_01.tar.gz',
   keywords = ['sense-hat', 'temperature', 'mqtt'],
   python_requires='>=3.6',
+  entry_points={
+        'console_scripts': [
+            'sensehatsensorstomqtt = sensehatsensorstomqtt:main',
+        ],
+  },
   install_requires=[
           'sense-hat',
           'hbmqtt',
