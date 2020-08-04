@@ -33,7 +33,7 @@ class Daemonizer(object):
 
         pid_desc = open(self._pid_file, 'w')
 
-        pid_desc.write(pid)
+        pid_desc.write(f"{pid}")
 
         pid_desc.close()
 
