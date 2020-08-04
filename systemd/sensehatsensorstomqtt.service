@@ -15,7 +15,7 @@ RemainAfterExit=yes
 # Command to execute when the service is started
 #ExecStart=/home/pi/git/sense-hat-sensors-to-mqtt/run.sh
 #ExecStart=python3 /home/pi/git/sense-hat-sensors-to-mqtt/src/sensehatsensorstomqtt/__main__.py --config_file /etc/sensehatsensorstomqtt.yaml --daemon
-ExecStart=/home/pi/git/sense-hat-sensors-to-mqtt/daemon.sh
+ExecStart=/usr/local/bin/sensehatsensorstomqtt
 ExecStop=pkill -F /run/sensehatsensorstomqtt/sensehatsensorstomqtt.pid
 
 # Disable Python's buffering of STDOUT and STDERR, so that output from the
