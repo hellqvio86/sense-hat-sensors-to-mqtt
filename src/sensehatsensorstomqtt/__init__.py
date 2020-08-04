@@ -121,6 +121,8 @@ async def send_sensor_data():
 
 def main():
     """Main function."""
+    global CONFIG
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--username", type=str, required=False)
     parser.add_argument("--password", type=str, required=False)
