@@ -215,11 +215,11 @@ if __name__ == "__main__":
     if CONFIG['debug']:
         print(f"config: {CONFIG}")
     
+    setup_logger(debug=CONFIG['debug'], log_file=CONFIG['log_file'], daemon = CONFIG['daemon'])
+
     if CONFIG['daemon']:
         if CONFIG['debug']:
             print('Forking!')
         Daemonizer(pid_file=CONFIG['pid_file'])
-
-    setup_logger(debug=CONFIG['debug'], log_file=CONFIG['log_file'], daemon = CONFIG['daemon'])
 
     main()
