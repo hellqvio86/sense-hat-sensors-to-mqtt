@@ -1,5 +1,6 @@
 import logging
 import os
+import psutil
 import sys
 
 _LOGGER = logging.getLogger(__name__)
@@ -30,6 +31,20 @@ class Daemonizer(object):
         pid = os.getpid()
 
         _LOGGER.debug(f'Setting up pidfile for PID {pid} to {self._pid_file}')
+
+        if os.path.isfile(self._pid_file):
+            pid_desc = open(self._pid_file, 'r')
+
+            pid = pid_desc.read()
+            if re.match(r'^\d+$', pid):
+                pid = int(pid)
+
+            if psutil.pid_exists(pid):
+                msg = f'Already running with pid {pid}'
+                _LOGGER.error(msg)
+                raise Exception(msg)
+
+
 
         pid_desc = open(self._pid_file, 'w')
 
