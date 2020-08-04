@@ -19,8 +19,6 @@ from async_cron.schedule import Scheduler
 
 sys.path.append(os.path.split(os.path.dirname(sys.argv[0]))[0])
 
-print("Path: {}".format(os.path.split(os.path.dirname(sys.argv[0]))[0]))
-
 LOGGER = logging.getLogger(__name__)
 CONFIG = {}
 

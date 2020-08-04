@@ -25,7 +25,7 @@ Environment=PYTHONUNBUFFERED=1
 # Automatically restart the service if it crashes
 Restart=on-failure
 
-StandardInput=tty-force
+#StandardInput=tty-force
 
 # Use a dedicated user to run our service
 User=pi
