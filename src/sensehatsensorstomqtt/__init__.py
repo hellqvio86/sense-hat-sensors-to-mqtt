@@ -119,22 +119,8 @@ async def send_sensor_data():
 
 
 
-def main(*, sslcontext=False):
+def main():
     """Main function."""
-    LOGGER.info("Starting Sense Hat Sensors to MQTT")
-
-    msh = Scheduler(locale='sv_SE')
-    job = CronJob(name='send_sensor_data').every(30).second.go(send_sensor_data)
-    msh.add_job(job)
-
-    loop = asyncio.get_event_loop()
-
-    try:
-        loop.run_until_complete(msh.start())
-    except KeyboardInterrupt:
-        print('exit')
-
-if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--username", type=str, required=False)
     parser.add_argument("--password", type=str, required=False)
@@ -205,4 +191,21 @@ if __name__ == "__main__":
             print('Forking!')
         Daemonizer(pid_file=CONFIG['pid_file'])
 
+
+    LOGGER.info("Starting Sense Hat Sensors to MQTT")
+
+    msh = Scheduler(locale='sv_SE')
+    job = CronJob(name='send_sensor_data').every(30).second.go(send_sensor_data)
+    msh.add_job(job)
+
+    loop = asyncio.get_event_loop()
+
+    try:
+        loop.run_until_complete(msh.start())
+    except KeyboardInterrupt:
+        print('exit')
+    
+    return
+
+if __name__ == "__main__":
     main()
