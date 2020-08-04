@@ -24,7 +24,7 @@ setup(
   python_requires='>=3.6',
   entry_points={
         'console_scripts': [
-            'sensehatsensorstomqtt = sensehatsensorstomqtt:main',
+            'sensehatsensorstomqtt = sensehatsensorstomqtt:__main',
         ],
   },
   install_requires=[
