@@ -25,10 +25,17 @@ COLOR_RED_ORANGE = (255, 63, 52)
 COLOR_LONDON_SQUARE = (128, 142, 155)
 COLOR_BLACK_PEARL = (30, 39, 46)
 
+
+COLOR_RED = (255, 0, 0)
+COLOR_YELLOW = (255, 255, 0)
+COLOR_BLUE = (0, 0, 255)
+
 def get_color_for_temperature(temperature):
     if temperature > 30:
-        return COLOR_SIZZLING_RED
+        return COLOR_RED
     elif temperature > 28:
-        return COLOR_CHROME_YELLOW
+        return COLOR_YELLOW
+    elif temperature < 18:
+        return COLOR_BLUE
     else:
         return (randint(0,255), randint(0,255), randint(0,255))
