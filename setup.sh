@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 LOG_DIR="/var/log/sensehatsensorstomqtt"
 PID_DIR="/run/sensehatsensorstomqtt"
 
