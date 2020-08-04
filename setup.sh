@@ -23,5 +23,8 @@ echo "Reloading systemd"
 systemctl --user daemon-reload
 systemctl daemon-reload
 
+echo "Starting service"
 systemctl start sensehatsensorstomqtt
+
+echo "Enabling service on boot"
 systemctl enable sensehatsensorstomqtt
