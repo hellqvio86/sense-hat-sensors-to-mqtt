@@ -29,7 +29,7 @@ class Daemonizer(object):
     def ___setup_pidfile(self):
         pid = os.getpid()
 
-        _LOGGER.debug(f'Setting up pidfile for PID {pid}')
+        _LOGGER.debug(f'Setting up pidfile for PID {pid} to {self._pid_file}')
 
         pid_desc = open(self._pid_file, 'w')
 
