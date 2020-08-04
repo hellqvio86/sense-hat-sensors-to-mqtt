@@ -1,6 +1,6 @@
 #/bin/bash
 LOG_DIR="/var/log/sensehatsensorstomqtt"
-PID_DIR="/var/run/sensehatsensorstomqtt"
+PID_DIR="/run/sensehatsensorstomqtt"
 
 echo "Changing directory to $(dirname "$0")"
 cd "$(dirname "$0")"
@@ -17,6 +17,7 @@ fi
 
 echo "Installing systemd script"
 cp systemd/sensehatsensorstomqtt.service /etc/systemd/system/sensehatsensorstomqtt.service
+chmod 644 /etc/systemd/system/sensehatsensorstomqtt.service
 
 echo "Reloading systemd"
 systemctl --user daemon-reload

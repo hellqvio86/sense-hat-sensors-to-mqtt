@@ -195,7 +195,7 @@ if __name__ == "__main__":
     if args.pid_file:
         CONFIG['pid_file'] = args.pid_file
     else:
-        CONFIG['pid_file'] = '/var/run/sensehatsensorstomqtt/sensehatsensorstomqtt.pid'
+        CONFIG['pid_file'] = '/run/sensehatsensorstomqtt/sensehatsensorstomqtt.pid'
 
     if args.daemon:
         CONFIG['daemon'] = args.daemon
