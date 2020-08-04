@@ -1,6 +1,8 @@
+import logging
 import os
 import sys
 
+_LOGGER = logging.getLogger(__name__)
 
 class Daemonizer(object):
     _pid_file = None
@@ -26,6 +28,8 @@ class Daemonizer(object):
 
     def ___setup_pidfile(self):
         pid = os.getpid()
+
+        _LOGGER.debug(f'Setting up pidfile for PID {pid}')
 
         pid_desc = open(self._pid_file, 'w')
 
@@ -56,29 +60,35 @@ class Daemonizer(object):
         return
 
     def __change_file_mode_mask(self):
+        _LOGGER.debug('Changing filemask to 0')
+    
         os.umask(0)
 
         return
 
     def __set_new_sid(self):
+        _LOGGER.debug('Setting new sid')
+    
         os.setpgrp()
 
         return
 
     def __change_directory(self):
-        os.chdir('/')
+        _LOGGER.debug('Changing directory to /')
 
-        return
+        os.chdir('/')
 
     def __background_process(self):
         #Will raise OSError if it fails to fork
+        _LOGGER.debug('Forking')
+    
         pid = os.fork()
+
         if (pid == 0):
             # CHILD
             return
         else:
             sys.exit(0)
-        return
 
 def start():
     worker = Daemonizer()
