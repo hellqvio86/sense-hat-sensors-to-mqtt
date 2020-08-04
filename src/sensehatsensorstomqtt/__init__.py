@@ -67,11 +67,11 @@ async def send_sensor_data():
     sense = SenseHat()
     msg = {}
 
-    host=CONFIG['host']
-    username=CONFIG['username']
-    password=CONFIG['password']
-    port=CONFIG['port']
-    topics=CONFIG['topics']
+    host     = CONFIG['host']
+    username = CONFIG['username']
+    password = CONFIG['password']
+    port     = CONFIG['port']
+    topics   = CONFIG['topics']
 
     msg['temperature'] = sense.get_temperature()
     msg['unit_of_temperature'] = 'C'
