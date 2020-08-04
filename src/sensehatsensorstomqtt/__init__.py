@@ -10,6 +10,7 @@ import json
 import datetime
 
 from .daemonizer import Daemonizer
+from .colors import get_color_for_temperature
 from random import randint
 from sense_hat import SenseHat
 from hbmqtt.client import MQTTClient
@@ -115,7 +116,8 @@ async def send_sensor_data():
     await asyncio.sleep(5)
     sense.show_message(f"{msg['humidity']:.2f} {msg['unit_of_humidity']}", text_colour=r2)
     await asyncio.sleep(5)
-    sense.show_message(f"{msg['temperature']:.2f} {msg['unit_of_temperature']}", text_colour=r3)
+    temperature_color = get_color_for_temperature(msg['temperature'])
+    sense.show_message(f"{msg['temperature']:.2f} {msg['unit_of_temperature']}", text_colour=temperature_color)
 
 
 
