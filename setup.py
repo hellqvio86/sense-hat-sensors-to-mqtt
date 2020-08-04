@@ -27,6 +27,7 @@ setup(
           'hbmqtt',
           'pyyaml',
           'async-cron',
+          'psutil'
       ],
   extras_require={
         'tests': [
