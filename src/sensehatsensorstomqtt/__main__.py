@@ -162,6 +162,7 @@ if __name__ == "__main__":
     parser.add_argument("--topics", type=str, required=False)
     parser.add_argument("--config_file", type=str, required=False)
     parser.add_argument("--log_file", type=str, required=False)
+    parser.add_argument("--pid_file", type=str, required=False)
     parser.add_argument("-D", "--debug", action="store_true")
     parser.add_argument("--daemon", action="store_true")
     args = parser.parse_args()
@@ -191,6 +192,11 @@ if __name__ == "__main__":
     else:
         CONFIG['log_file'] = '/var/log/sensehatsensorstomqtt/sensehatsensorstomqtt.log'
     
+    if args.pid_file:
+        CONFIG['pid_file'] = args.pid_file
+    else:
+        CONFIG['pid_file'] = '/var/run/sensehatsensorstomqtt/sensehatsensorstomqtt.pid'
+
     if args.daemon:
         CONFIG['daemon'] = args.daemon
     elif 'daemon' not in CONFIG:
@@ -210,7 +216,7 @@ if __name__ == "__main__":
         print(f"config: {CONFIG}")
     
     if CONFIG['daemon']:
-        Daemonizer()
+        Daemonizer(pid_file=CONFIG['pid_file'])
 
     setup_logger(debug=CONFIG['debug'], log_file=CONFIG['log_file'], daemon = CONFIG['daemon'])
 

@@ -5,12 +5,12 @@
 
 # Human readable name of the unit
 Description=Sense hat sensors to MQTT
-
-After=multi-user.target
-Conflicts=getty@tty1.service
+After=network.target
+Wants=network.target
 
 [Service]
-Type=simple
+Type=forking
+RemainAfterExit=yes
 
 # Command to execute when the service is started
 #ExecStart=/home/pi/git/sense-hat-sensors-to-mqtt/run.sh
@@ -29,6 +29,10 @@ StandardInput=tty-force
 User=pi
 Group=pi
 
+PIDFile=/var/run/sensehatsensorstomqtt/sensehatsensorstomqtt.pid
+StandardOutput=syslog
+
+TimeoutStartSec=600
 
 [Install]
 

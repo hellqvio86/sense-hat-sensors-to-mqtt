@@ -1,11 +1,18 @@
 #/bin/bash
+LOG_DIR="/var/log/sensehatsensorstomqtt"
+PID_DIR="/var/run/sensehatsensorstomqtt"
+
 echo "Changing directory to $(dirname "$0")"
 cd "$(dirname "$0")"
 
-if [ ! -d "/var/log/sensehatsensorstomqtt" ]; then
-  # Control will enter here if $DIRECTORY doesn't exist.
-  mkdir /var/log/sensehatsensorstomqtt
-  chown pi:pi /var/log/sensehatsensorstomqtt
+if [ ! -d $LOG_DIR ]; then
+  mkdir $LOG_DIR
+  chown pi:pi $LOG_DIR
+fi
+
+if [ ! -d $PID_DIR ]; then
+  mkdir $PID_DIR
+  chown pi:pi $PID_DIR
 fi
 
 echo "Installing systemd script"

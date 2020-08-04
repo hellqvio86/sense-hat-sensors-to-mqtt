@@ -3,10 +3,13 @@ import sys
 
 
 class Daemonizer(object):
-    def __init__(self):
+    _pid_file = None
+    def __init__(self, *, pid_file=None):
         '''
-        Empty
+        
         '''
+        self._pid_file = pid_file
+
         self.run()
         return
 
@@ -15,6 +18,20 @@ class Daemonizer(object):
         self.__decouple()
         self.__background_process()
         self.__redirect()
+
+        if self._pid_file:
+            self.___setup_pidfile()
+
+        return
+
+    def ___setup_pidfile(self):
+        pid = os.getpid()
+
+        pid_desc = open(self._pid_file, 'w')
+
+        pid_desc.write(pid)
+
+        pid_desc.close()
 
         return
 
