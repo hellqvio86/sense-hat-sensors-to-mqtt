@@ -1,6 +1,6 @@
 #!/bin/bash
-LOG_DIR="/var/log/sensehatsensorstomqtt"
-PID_DIR="/run/sensehatsensorstomqtt"
+LOG_DIR="/var/log/enviroplussensorstomqtt"
+PID_DIR="/run/enviroplussensorstomqtt"
 
 echo "Changing directory to $(dirname "$0")"
 cd "$(dirname "$0")"
@@ -16,15 +16,15 @@ if [ ! -d $PID_DIR ]; then
 fi
 
 echo "Installing systemd script"
-cp systemd/sensehatsensorstomqtt.service /etc/systemd/system/sensehatsensorstomqtt.service
-chmod 644 /etc/systemd/system/sensehatsensorstomqtt.service
+cp systemd/enviroplussensorstomqtt.service /etc/systemd/system/enviroplussensorstomqtt.service
+chmod 644 /etc/systemd/system/enviroplussensorstomqtt.service
 
 echo "Reloading systemd"
 systemctl --user daemon-reload
 systemctl daemon-reload
 
 echo "Starting service"
-systemctl start sensehatsensorstomqtt
+systemctl start enviroplussensorstomqtt
 
 echo "Enabling service on boot"
-systemctl enable sensehatsensorstomqtt
+systemctl enable enviroplussensorstomqtt

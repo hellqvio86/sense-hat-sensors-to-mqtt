@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-  name = 'sensehatsensorstomqtt',
+  name = 'enviroplussensorstomqtt',
   packages = find_packages('src'),
   package_dir = {'': 'src'},
   version = '0.001',
@@ -20,15 +20,15 @@ setup(
   author_email = 'olof.hellqvist@gmail.com',
   url = 'https://github.com/hellqvio86/sense-hat-sensors-to-mqtt',
   download_url = 'https://github.com/hellqvio86/sense-hat-sensors-to-mqtt/archive/v_01.tar.gz',
-  keywords = ['sense-hat', 'temperature', 'mqtt'],
+  keywords = ['enviroplus ', 'temperature', 'mqtt'],
   python_requires='>=3.6',
   entry_points={
         'console_scripts': [
-            'sensehatsensorstomqtt = sensehatsensorstomqtt:main',
+            'enviroplussensorstomqtt = enviroplussensorstomqtt:main',
         ],
   },
   install_requires=[
-          'sense-hat',
+          'enviroplus',
           'hbmqtt',
           'pyyaml',
           'async-cron',

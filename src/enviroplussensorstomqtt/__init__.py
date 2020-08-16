@@ -12,7 +12,13 @@ import datetime
 from .daemonizer import Daemonizer
 from .colors import get_color_for_temperature
 from random import randint
-from sense_hat import SenseHat
+from bme280 import BME280
+from pms5003 import PMS5003, ReadTimeoutError, SerialTimeoutError
+from enviroplus.noise import Noise
+try:
+    from smbus2 import SMBus
+except ImportError:
+    from smbus import SMBus
 from hbmqtt.client import MQTTClient
 from async_cron.job import CronJob
 from async_cron.schedule import Scheduler
@@ -21,7 +27,6 @@ sys.path.append(os.path.split(os.path.dirname(sys.argv[0]))[0])
 
 LOGGER = logging.getLogger(__name__)
 CONFIG = {}
-
 
 
 def parse_config(config_file='config.yaml'):
@@ -36,7 +41,7 @@ def parse_config(config_file='config.yaml'):
     return config
 
 
-def setup_logger(*, debug=False, log_file='/var/log/sensehatsensorstomqtt/sensehatsensorstomqtt.log', daemon=False):
+def setup_logger(*, debug=False, log_file='/var/log/enviroplussensorstomqtt/enviroplussensorstomqtt.log', daemon=False):
     root = logging.getLogger()
     file_handler = None
     max_bytes = 3 * 10**6
@@ -62,8 +67,24 @@ def setup_logger(*, debug=False, log_file='/var/log/sensehatsensorstomqtt/senseh
         root.addHandler(file_handler)
 
 
+# Read values PMS5003 and return as dict
+def read_pms5003(pms5003):
+    values = {}
+    try:
+        pm_values = pms5003.read()  # int
+        values["pm1"] = pm_values.pm_ug_per_m3(1)
+        values["pm25"] = pm_values.pm_ug_per_m3(2.5)
+        values["pm10"] = pm_values.pm_ug_per_m3(10)
+    except ReadTimeoutError:
+        pms5003.reset()
+        pm_values = pms5003.read()
+        values["pm1"] = pm_values.pm_ug_per_m3(1)
+        values["pm25"] = pm_values.pm_ug_per_m3(2.5)
+        values["pm10"] = pm_values.pm_ug_per_m3(10)
+    return values
+
+
 async def send_sensor_data():
-    sense = SenseHat()
     msg = {}
 
     host     = CONFIG['host']
@@ -72,12 +93,39 @@ async def send_sensor_data():
     port     = CONFIG['port']
     topics   = CONFIG['topics']
 
-    msg['temperature'] = sense.get_temperature()
+    bus = SMBus(1)
+    device_bme280 = BME280(i2c_dev=bus)
+
+
+    msg['temperature'] = device_bme280.get_temperature()
     msg['unit_of_temperature'] = 'C'
-    msg['humidity'] = sense.get_humidity()
+    msg['humidity'] = device_bme280.get_humidity()
     msg['unit_of_humidity'] = '%'
-    msg['pressure'] = sense.get_pressure()
+    msg['pressure'] = device_bme280.get_pressure()
     msg['unit_of_pressure'] = 'mbar'
+
+    # Noise
+    msg['noise_low'],  msg['noise_mid'], msg['noise_high'], msg['noise_amp'] = noise.get_noise_profile()
+
+    # Gas readings
+    # Oxidising: 1516.34 Ohms
+    # Reducing: 258285.71 Ohms
+    # NH3: 28038.20 Ohms
+    gas_readings = gas.read_all()
+    msg['gas_oxidising'] = readings.oxidising
+    msg['unit_of_gas_oxidising'] = 'Ohms'
+    msg['gas_reducing'] = readings.reducing
+    msg['unit_of_gas_reducin'] = 'Ohms'
+    msg['gas_nh3'] = readings.nh3
+    msg['unit_of_gas_nh3'] = 'Ohms'
+
+    # PMM
+    pms5003 = PMS5003()
+    pmm_values = read_pms5003(pms5003)
+    msg['pm1'] = pmm_values['pm1']
+    msg['pm10'] = pmm_values['pm10']
+    msg['pm25'] = pmm_values['pm25']
+
     msg['time_utc'] = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")
 
     uri = f"mqtt://{username}:{password}@{host}:{port}"
@@ -105,17 +153,6 @@ async def send_sensor_data():
     await C.disconnect()
 
     LOGGER.info('Disconnected')
-
-
-    r1 = (randint(0,255), randint(0,255), randint(0,255))
-    r2 = (randint(0,255), randint(0,255), randint(0,255))
-    r3 = (randint(0,255), randint(0,255), randint(0,255))
-    sense.show_message(f"{msg['pressure']:.2f} {msg['unit_of_pressure']}", text_colour=r1)
-    await asyncio.sleep(5)
-    sense.show_message(f"{msg['humidity']:.2f} {msg['unit_of_humidity']}", text_colour=r2)
-    await asyncio.sleep(5)
-    temperature_color = get_color_for_temperature(msg['temperature'])
-    sense.show_message(f"{msg['temperature']:.2f} {msg['unit_of_temperature']}", text_colour=temperature_color)
 
 
 
