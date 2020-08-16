@@ -1,3 +1,3 @@
 #!/bin/bash
 cd "$(dirname "$0")"
-/usr/bin/python3 -m src.enviroplussensorstomqtt.__main__
+/usr/bin/python3 -m src.sensehatsensorstomqtt.__main__

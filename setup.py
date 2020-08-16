@@ -8,10 +8,10 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-  name = 'enviroplussensorstomqtt',
+  name = 'sensehatsensorstomqtt',
   packages = find_packages('src'),
   package_dir = {'': 'src'},
-  version = '0.001',
+  version = '0.002',
   license='MIT',
   description = 'aio library for sending sense-hat sensors data to mqtt',
   long_description = long_description,
@@ -20,15 +20,15 @@ setup(
   author_email = 'olof.hellqvist@gmail.com',
   url = 'https://github.com/hellqvio86/sense-hat-sensors-to-mqtt',
   download_url = 'https://github.com/hellqvio86/sense-hat-sensors-to-mqtt/archive/v_01.tar.gz',
-  keywords = ['enviroplus ', 'temperature', 'mqtt'],
+  keywords = ['sense-hat', 'temperature', 'mqtt'],
   python_requires='>=3.6',
   entry_points={
         'console_scripts': [
-            'enviroplussensorstomqtt = enviroplussensorstomqtt:main',
+            'sensehatsensorstomqtt = sensehatsensorstomqtt:main',
         ],
   },
   install_requires=[
-          'enviroplus',
+          'sense-hat',
           'hbmqtt',
           'pyyaml',
           'async-cron',
