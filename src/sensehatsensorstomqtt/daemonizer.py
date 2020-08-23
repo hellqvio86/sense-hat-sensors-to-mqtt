@@ -3,6 +3,7 @@ import os
 import psutil
 import sys
 
+
 _LOGGER = logging.getLogger(__name__)
 
 class Daemonizer(object):

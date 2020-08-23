@@ -16,6 +16,7 @@ from sense_hat import SenseHat
 from hbmqtt.client import MQTTClient
 from async_cron.job import CronJob
 from async_cron.schedule import Scheduler
+from statistics import median
 
 sys.path.append(os.path.split(os.path.dirname(sys.argv[0]))[0])
 
@@ -62,7 +63,7 @@ def setup_logger(*, debug=False, log_file='/var/log/sensehatsensorstomqtt/senseh
         root.addHandler(file_handler)
 
 
-async def send_sensor_data():
+async def send_sensor_data(measurements=3):
     sense = SenseHat()
     msg = {}
 
@@ -72,11 +73,26 @@ async def send_sensor_data():
     port     = CONFIG['port']
     topics   = CONFIG['topics']
 
-    msg['temperature'] = sense.get_temperature()
+    # Take median of three readings
+    tmp = []
+    for i in range(0, measurements):
+        tmp.append(sense.get_temperature())
+        await asyncio.sleep(1)
+    msg['temperature'] = median(tmp)
     msg['unit_of_temperature'] = 'C'
-    msg['humidity'] = sense.get_humidity()
+
+    tmp = []
+    for i in range(0, measurements):
+        tmp.append(sense.get_humidity())
+        await asyncio.sleep(1)
+    msg['humidity'] = median(tmp)
     msg['unit_of_humidity'] = '%'
-    msg['pressure'] = sense.get_pressure()
+
+    tmp = []
+    for i in range(0, measurements):
+        tmp.append(sense.get_pressure())
+        await asyncio.sleep(1)
+    msg['pressure'] = median(tmp)
     msg['unit_of_pressure'] = 'mbar'
     msg['time_utc'] = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")
 
