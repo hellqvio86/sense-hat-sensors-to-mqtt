@@ -179,7 +179,7 @@ def main():
     """Main function."""
     global CONFIG
 
-    setproctitle('setproctitle')
+    setproctitle('sensehatsensorstomqtt')
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--username", type=str, required=False)
