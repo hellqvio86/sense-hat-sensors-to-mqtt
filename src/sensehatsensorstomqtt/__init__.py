@@ -139,6 +139,8 @@ async def send_sensor_data(measurements=3):
 
     LOGGER.info(f"Connected to {uri}")
 
+    LOGGER.debug(f"dir(mqttclient): {dir(mqttclient)}")
+
     tasks = []
 
     for topic in topics:
