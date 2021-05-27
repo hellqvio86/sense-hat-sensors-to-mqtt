@@ -1,3 +1,6 @@
+'''
+Colors for terminal
+'''
 from random import randint
 
 COLOR_HIGHLIGHTED_PINK = (239, 87, 119)
@@ -37,9 +40,11 @@ def get_color_for_temperature(temperature):
     '''
     if temperature > 30:
         return COLOR_RED
-    elif temperature > 28:
+
+    if temperature > 28:
         return COLOR_YELLOW
-    elif temperature < 18:
+
+    if temperature < 18:
         return COLOR_BLUE
     else:
         return (randint(0, 255), randint(0, 255), randint(0, 255))

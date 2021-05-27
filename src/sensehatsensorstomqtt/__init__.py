@@ -1,3 +1,7 @@
+'''
+Simple program to send Sensehat messurements through MQTT
+to Home Assistant
+'''
 import argparse
 import asyncio
 import logging
@@ -99,21 +103,27 @@ async def send_sensor_data(measurements=3):
     # Take median of three readings
     tmp = []
     for i in range(0, measurements):
-        tmp.append(sense.get_temperature())
+        temperature = sense.get_temperature()
+        LOGGER.debug(f"temperature - measurement {i} value: {temperature}")
+        tmp.append(temperature)
         await asyncio.sleep(1)
     msg['temperature'] = median(tmp)
     msg['unit_of_temperature'] = 'C'
 
     tmp = []
     for i in range(0, measurements):
-        tmp.append(sense.get_humidity())
+        humidity = sense.get_humidity()
+        LOGGER.debug(f"humidity - measurement {i} value: {humidity}")
+        tmp.append(humidity)
         await asyncio.sleep(1)
     msg['humidity'] = median(tmp)
     msg['unit_of_humidity'] = '%'
 
     tmp = []
     for i in range(0, measurements):
-        tmp.append(sense.get_pressure())
+        pressure = sense.get_pressure()
+        LOGGER.debug(f"pressure - measurement {i} value: {pressure}")
+        tmp.append(pressure)
         await asyncio.sleep(1)
     msg['pressure'] = median(tmp)
     msg['unit_of_pressure'] = 'mbar'
