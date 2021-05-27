@@ -3,7 +3,6 @@ import asyncio
 import logging
 import logging.handlers
 import yaml
-import pprint
 import sys
 import os
 import json
@@ -12,6 +11,7 @@ import datetime
 from .daemonizer import Daemonizer
 from .colors import get_color_for_temperature
 from random import randint
+from setproctitle import setproctitle
 from sense_hat import SenseHat
 from hbmqtt.client import MQTTClient
 from async_cron.job import CronJob
@@ -24,12 +24,15 @@ LOGGER = logging.getLogger(__name__)
 CONFIG = {}
 
 
-
 def parse_config(config_file='config.yaml'):
+    '''
+    Parse configuration
+    '''
     config = {}
 
     if not os.path.isfile(config_file):
-        return config # empty dict
+        # Return empty dict
+        return config
 
     with open(config_file, 'r') as stream:
         config = yaml.safe_load(stream)
@@ -37,7 +40,14 @@ def parse_config(config_file='config.yaml'):
     return config
 
 
-def setup_logger(*, debug=False, log_file='/var/log/sensehatsensorstomqtt/sensehatsensorstomqtt.log', daemon=False):
+def setup_logger(
+        *,
+        debug=False,
+        log_file='/var/log/sensehatsensorstomqtt/sensehatsensorstomqtt.log',
+        daemon=False):
+    '''
+    Function for setting up logging
+    '''
     root = logging.getLogger()
     file_handler = None
     max_bytes = 3 * 10**6
@@ -45,11 +55,21 @@ def setup_logger(*, debug=False, log_file='/var/log/sensehatsensorstomqtt/senseh
     formatter = logging.Formatter('%(asctime)s %(process)d %(processName)-10s %(name)-8s %(funcName)-8s %(levelname)-8s %(message)s')
 
     if debug:
-        file_handler = logging.handlers.RotatingFileHandler(log_file, 'a', max_bytes, backup_count)
+        file_handler = logging.handlers.RotatingFileHandler(
+            log_file,
+            'a',
+            max_bytes,
+            backup_count
+            )
         file_handler.setFormatter(formatter)
 
     if daemon:
-        file_handler = logging.handlers.RotatingFileHandler(log_file, 'a', max_bytes, backup_count)
+        file_handler = logging.handlers.RotatingFileHandler(
+            log_file,
+            'a',
+            max_bytes,
+            backup_count
+            )
         file_handler.setFormatter(formatter)
     else:
         console_handler = logging.StreamHandler()
@@ -58,20 +78,23 @@ def setup_logger(*, debug=False, log_file='/var/log/sensehatsensorstomqtt/senseh
 
     if debug:
         root.setLevel(logging.DEBUG)
-    
+
     if file_handler:
         root.addHandler(file_handler)
 
 
 async def send_sensor_data(measurements=3):
+    '''
+    Semd semse hat measurement
+    '''
     sense = SenseHat()
     msg = {}
 
-    host     = CONFIG['host']
+    host = CONFIG['host']
     username = CONFIG['username']
     password = CONFIG['password']
-    port     = CONFIG['port']
-    topics   = CONFIG['topics']
+    port = CONFIG['port']
+    topics = CONFIG['topics']
 
     # Take median of three readings
     tmp = []
@@ -100,44 +123,53 @@ async def send_sensor_data(measurements=3):
 
     LOGGER.info(f"Connecting to {uri}")
 
-    C = MQTTClient()
-    
-    await C.connect(uri)
+    mqttclient = MQTTClient()
+
+    await mqttclient.connect(uri)
 
     LOGGER.info(f"Connected to {uri}")
 
     tasks = []
-    
+
     for topic in topics:
         data = json.dumps(msg).encode('utf-8')
 
         LOGGER.info(f"Publishing msg: {msg} to topic: {topic}")
-        tasks.append(asyncio.ensure_future(C.publish(topic, data)))
-    
+        tasks.append(asyncio.ensure_future(mqttclient.publish(topic, data)))
+
     await asyncio.wait(tasks)
-    
+
     LOGGER.info("messages published")
 
-    await C.disconnect()
+    await mqttclient.disconnect()
 
     LOGGER.info('Disconnected')
 
+    color_1 = (randint(0, 255), randint(0, 255), randint(0, 255))
+    color_2 = (randint(0, 255), randint(0, 255), randint(0, 255))
 
-    r1 = (randint(0,255), randint(0,255), randint(0,255))
-    r2 = (randint(0,255), randint(0,255), randint(0,255))
-    r3 = (randint(0,255), randint(0,255), randint(0,255))
-    sense.show_message(f"{msg['pressure']:.2f} {msg['unit_of_pressure']}", text_colour=r1)
+    sense.show_message(
+        f"{msg['pressure']:.2f} {msg['unit_of_pressure']}",
+        text_colour=color_1)
     await asyncio.sleep(5)
-    sense.show_message(f"{msg['humidity']:.2f} {msg['unit_of_humidity']}", text_colour=r2)
+
+    sense.show_message(
+        f"{msg['humidity']:.2f} {msg['unit_of_humidity']}",
+        text_colour=color_2)
     await asyncio.sleep(5)
+
     temperature_color = get_color_for_temperature(msg['temperature'])
-    sense.show_message(f"{msg['temperature']:.2f} {msg['unit_of_temperature']}", text_colour=temperature_color)
 
+    sense.show_message(
+        f"{msg['temperature']:.2f} {msg['unit_of_temperature']}",
+        text_colour=temperature_color)
 
 
 def main():
     """Main function."""
     global CONFIG
+
+    setproctitle('setproctitle')
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--username", type=str, required=False)
@@ -161,13 +193,13 @@ def main():
 
     if args.username:
         CONFIG['username'] = args.username
-    
+
     if args.password:
         CONFIG['password'] = args.password
-    
+
     if args.host:
         CONFIG['host'] = args.host
-    
+
     if args.port:
         CONFIG['port'] = args.port
 
@@ -178,7 +210,7 @@ def main():
         CONFIG['log_file'] = args.log_file
     else:
         CONFIG['log_file'] = '/var/log/sensehatsensorstomqtt/sensehatsensorstomqtt.log'
-    
+
     if args.pid_file:
         CONFIG['pid_file'] = args.pid_file
     else:
@@ -197,18 +229,20 @@ def main():
 
     if 'port' not in CONFIG:
         CONFIG['port'] = 1883
-    
 
     if CONFIG['debug']:
         print(f"config: {CONFIG}")
-    
-    setup_logger(debug=CONFIG['debug'], log_file=CONFIG['log_file'], daemon = CONFIG['daemon'])
+
+    setup_logger(
+        debug=CONFIG['debug'],
+        log_file=CONFIG['log_file'],
+        daemon=CONFIG['daemon']
+        )
 
     if CONFIG['daemon']:
         if CONFIG['debug']:
             print('Forking!')
         Daemonizer(pid_file=CONFIG['pid_file'])
-
 
     LOGGER.info("Starting Sense Hat Sensors to MQTT")
 
@@ -222,8 +256,9 @@ def main():
         loop.run_until_complete(msh.start())
     except KeyboardInterrupt:
         print('exit')
-    
+
     return
+
 
 if __name__ == "__main__":
     main()

@@ -11,7 +11,7 @@ setup(
   name = 'sensehatsensorstomqtt',
   packages = find_packages('src'),
   package_dir = {'': 'src'},
-  version = '0.002',
+  version = '0.003',
   license='MIT',
   description = 'aio library for sending sense-hat sensors data to mqtt',
   long_description = long_description,
@@ -32,6 +32,7 @@ setup(
           'hbmqtt',
           'pyyaml',
           'async-cron',
+          'setproctitle',
           'psutil'
       ],
   extras_require={

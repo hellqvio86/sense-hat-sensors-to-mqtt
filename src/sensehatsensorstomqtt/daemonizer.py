@@ -1,16 +1,21 @@
 import logging
 import os
-import psutil
 import sys
-
+import re
+import psutil
 
 _LOGGER = logging.getLogger(__name__)
 
+
 class Daemonizer(object):
+    '''
+    Class for Daemonizing a process
+    '''
     _pid_file = None
+
     def __init__(self, *, pid_file=None):
         '''
-        
+        Constructor
         '''
         self._pid_file = pid_file
 
@@ -18,6 +23,9 @@ class Daemonizer(object):
         return
 
     def run(self):
+        '''
+        Run function
+        '''
         self.__background_process()
         self.__decouple()
         self.__background_process()
@@ -29,6 +37,9 @@ class Daemonizer(object):
         return
 
     def ___setup_pidfile(self):
+        '''
+        Private function for setting up a pidfile
+        '''
         pid = os.getpid()
 
         _LOGGER.debug(f'Setting up pidfile for PID {pid} to {self._pid_file}')
@@ -45,8 +56,6 @@ class Daemonizer(object):
                 _LOGGER.error(msg)
                 raise Exception(msg)
 
-
-
         pid_desc = open(self._pid_file, 'w')
 
         pid_desc.write(f"{pid}")
@@ -56,6 +65,10 @@ class Daemonizer(object):
         return
 
     def __redirect(self):
+        '''
+        Private function for redirecting stderr, stdout and
+        stdin to /dev/null
+        '''
         sys.stdin.close()
         sys.stdin = open('/dev/null', 'r')
 
@@ -68,6 +81,10 @@ class Daemonizer(object):
         return
 
     def __decouple(self):
+        '''
+        Private function for decoupling the process
+        from its parent
+        '''
         self.__change_directory()
 
         self.__set_new_sid()
@@ -76,28 +93,40 @@ class Daemonizer(object):
         return
 
     def __change_file_mode_mask(self):
+        '''
+        Private function for chaning the default
+        file mask
+        '''
         _LOGGER.debug('Changing filemask to 0')
-    
+
         os.umask(0)
 
         return
 
     def __set_new_sid(self):
+        '''
+        Private function for setting a new sid
+        '''
         _LOGGER.debug('Setting new sid')
-    
+
         os.setpgrp()
 
         return
 
     def __change_directory(self):
+        '''
+        Private function for changing directory to /
+        '''
         _LOGGER.debug('Changing directory to /')
 
         os.chdir('/')
 
     def __background_process(self):
-        #Will raise OSError if it fails to fork
+        '''
+        Function for forking to background process
+        '''
         _LOGGER.debug('Forking')
-    
+
         pid = os.fork()
 
         if (pid == 0):
@@ -106,11 +135,16 @@ class Daemonizer(object):
         else:
             sys.exit(0)
 
+
 def start():
+    '''
+    Wrapper for daemonizing the current process
+    '''
     worker = Daemonizer()
     worker.run()
 
     return
+
 
 if __name__ == '__main__':
     start()
