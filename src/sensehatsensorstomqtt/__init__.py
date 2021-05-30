@@ -264,7 +264,8 @@ def main():
 
         LOGGER.debug(f"Sleeping {sleep_time} seconds")
 
-        sleep(sleep_time)
+        if sleep_time > 0:
+            sleep(sleep_time)
 
     return
 
