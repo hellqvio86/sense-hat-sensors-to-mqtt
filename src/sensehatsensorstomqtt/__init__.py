@@ -11,15 +11,16 @@ import sys
 import os
 import json
 import datetime
+import time
 
 from .daemonizer import Daemonizer
 from .colors import get_color_for_temperature
 from random import randint
+from time import sleep
+
 from setproctitle import setproctitle
 from sense_hat import SenseHat
-from hbmqtt.client import MQTTClient
-from async_cron.job import CronJob
-from async_cron.schedule import Scheduler
+import paho.mqtt.client as mqtt
 from statistics import median
 
 sys.path.append(os.path.split(os.path.dirname(sys.argv[0]))[0])
@@ -56,7 +57,8 @@ def setup_logger(
     file_handler = None
     max_bytes = 3 * 10**6
     backup_count = 10
-    formatter = logging.Formatter('%(asctime)s %(process)d %(processName)-10s %(name)-8s %(funcName)-8s %(levelname)-8s %(message)s')
+    formatter = logging.Formatter(
+        '%(asctime)s %(process)d %(processName)-10s %(name)-8s %(funcName)-8s %(levelname)-8s %(message)s')
 
     if debug:
         file_handler = logging.handlers.RotatingFileHandler(
@@ -64,7 +66,7 @@ def setup_logger(
             'a',
             max_bytes,
             backup_count
-            )
+        )
         file_handler.setFormatter(formatter)
 
     if daemon:
@@ -73,7 +75,7 @@ def setup_logger(
             'a',
             max_bytes,
             backup_count
-            )
+        )
         file_handler.setFormatter(formatter)
     else:
         console_handler = logging.StreamHandler()
@@ -87,7 +89,7 @@ def setup_logger(
         root.addHandler(file_handler)
 
 
-async def send_sensor_data(measurements=3):
+def send_sensor_data(measurements=3):
     '''
     Semd semse hat measurement
     '''
@@ -106,7 +108,7 @@ async def send_sensor_data(measurements=3):
         temperature = sense.get_temperature()
         LOGGER.debug(f"temperature - measurement {i} value: {temperature}")
         tmp.append(temperature)
-        await asyncio.sleep(1)
+        sleep(1)
     msg['temperature'] = median(tmp)
     msg['unit_of_temperature'] = 'C'
 
@@ -115,7 +117,7 @@ async def send_sensor_data(measurements=3):
         humidity = sense.get_humidity()
         LOGGER.debug(f"humidity - measurement {i} value: {humidity}")
         tmp.append(humidity)
-        await asyncio.sleep(1)
+        sleep(1)
     msg['humidity'] = median(tmp)
     msg['unit_of_humidity'] = '%'
 
@@ -124,7 +126,7 @@ async def send_sensor_data(measurements=3):
         pressure = sense.get_pressure()
         LOGGER.debug(f"pressure - measurement {i} value: {pressure}")
         tmp.append(pressure)
-        await asyncio.sleep(1)
+        sleep(1)
     msg['pressure'] = median(tmp)
     msg['unit_of_pressure'] = 'mbar'
     msg['time_utc'] = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")
@@ -133,27 +135,21 @@ async def send_sensor_data(measurements=3):
 
     LOGGER.info(f"Connecting to {uri}")
 
-    mqttclient = MQTTClient()
-
-    await mqttclient.connect(uri)
+    client = mqtt.Client()
+    client.username_pw_set(username, password=password)
+    client.connect(host, port, 60)
 
     LOGGER.info(f"Connected to {uri}")
-
-    LOGGER.debug(f"dir(mqttclient): {dir(mqttclient)}")
-
-    tasks = []
 
     for topic in topics:
         data = json.dumps(msg).encode('utf-8')
 
         LOGGER.info(f"Publishing msg: {msg} to topic: {topic}")
-        tasks.append(asyncio.ensure_future(mqttclient.publish(topic, data)))
-
-    await asyncio.wait(tasks)
+        client.publish(topic=topic, payload=data)
 
     LOGGER.info("messages published")
 
-    await mqttclient.disconnect()
+    client.disconnect()
 
     LOGGER.info('Disconnected')
 
@@ -163,12 +159,12 @@ async def send_sensor_data(measurements=3):
     sense.show_message(
         f"{msg['pressure']:.2f} {msg['unit_of_pressure']}",
         text_colour=color_1)
-    await asyncio.sleep(5)
+    sleep(5)
 
     sense.show_message(
         f"{msg['humidity']:.2f} {msg['unit_of_humidity']}",
         text_colour=color_2)
-    await asyncio.sleep(5)
+    sleep(5)
 
     temperature_color = get_color_for_temperature(msg['temperature'])
 
@@ -249,7 +245,7 @@ def main():
         debug=CONFIG['debug'],
         log_file=CONFIG['log_file'],
         daemon=CONFIG['daemon']
-        )
+    )
 
     if CONFIG['daemon']:
         if CONFIG['debug']:
@@ -258,16 +254,15 @@ def main():
 
     LOGGER.info("Starting Sense Hat Sensors to MQTT")
 
-    msh = Scheduler(locale='sv_SE')
-    job = CronJob(name='send_sensor_data').every(30).second.go(send_sensor_data)
-    msh.add_job(job)
+    while(True):
+        before_work = time.time()
+        send_sensor_data()
 
-    loop = asyncio.get_event_loop()
+        after_work = time.time()
 
-    try:
-        loop.run_until_complete(msh.start())
-    except KeyboardInterrupt:
-        print('exit')
+        sleep_time = 60 - (after_work - before_work)
+
+        sleep(sleep_time)
 
     return
 
