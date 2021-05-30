@@ -262,7 +262,7 @@ def main():
 
         sleep_time = 60 - (after_work - before_work)
 
-        LOGGER.debug("Sleeping {sleep_time} seconds")
+        LOGGER.debug(f"Sleeping {sleep_time} seconds")
 
         sleep(sleep_time)
 
