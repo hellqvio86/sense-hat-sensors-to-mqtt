@@ -260,7 +260,7 @@ def main():
 
         after_work = time.time()
 
-        sleep_time = 60 - (after_work - before_work)
+        sleep_time = round(60 - (after_work - before_work))
 
         LOGGER.debug(f"Sleeping {sleep_time} seconds")
 
