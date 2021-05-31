@@ -9,14 +9,15 @@ After=network.target
 Wants=network.target
 
 [Service]
-Type=forking
+#Type=forking
+Type=simple
 RemainAfterExit=yes
+Restart=always
+RestartSec=3
 
 # Command to execute when the service is started
-#ExecStart=/home/pi/git/sense-hat-sensors-to-mqtt/run.sh
-#ExecStart=python3 /home/pi/git/sense-hat-sensors-to-mqtt/src/sensehatsensorstomqtt/__main__.py --config_file /etc/sensehatsensorstomqtt.yaml --daemon
 ExecStart=/usr/local/bin/sensehatsensorstomqtt
-ExecStop=pkill -F /run/sensehatsensorstomqtt/sensehatsensorstomqtt.pid
+#ExecStop=pkill -F /run/enviroplussensorstomqtt/enviroplussensorstomqtt.pid
 
 # Disable Python's buffering of STDOUT and STDERR, so that output from the
 # service shows up immediately in systemd's logs
@@ -28,10 +29,10 @@ Restart=on-failure
 #StandardInput=tty-force
 
 # Use a dedicated user to run our service
-User=pi
-Group=pi
+User=root
+Group=root
 
-PIDFile=/run/sensehatsensorstomqtt/sensehatsensorstomqtt.pid
+#PIDFile=/run/enviroplussensorstomqtt/enviroplussensorstomqtt.pid
 StandardOutput=syslog
 
 TimeoutStartSec=600
