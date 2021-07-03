@@ -28,6 +28,8 @@ sys.path.append(os.path.split(os.path.dirname(sys.argv[0]))[0])
 LOGGER = logging.getLogger(__name__)
 CONFIG = {}
 
+MQTT_CLIENT = None
+
 
 def parse_config(config_file='config.yaml'):
     '''
@@ -93,6 +95,7 @@ def send_sensor_data(measurements=3):
     '''
     Semd semse hat measurement
     '''
+    global MQTT_CLIENT
     sense = SenseHat()
     msg = {}
 
@@ -135,9 +138,9 @@ def send_sensor_data(measurements=3):
 
     LOGGER.info(f"Connecting to {uri}")
 
-    client = mqtt.Client()
-    client.username_pw_set(username, password=password)
-    client.connect(host, port, 60)
+    MQTT_CLIENT = mqtt.Client()
+    MQTT_CLIENT.username_pw_set(username, password=password)
+    MQTT_CLIENT.connect(host, port, 60)
 
     LOGGER.info(f"Connected to {uri}")
 
@@ -145,13 +148,9 @@ def send_sensor_data(measurements=3):
         data = json.dumps(msg).encode('utf-8')
 
         LOGGER.info(f"Publishing msg: {msg} to topic: {topic}")
-        client.publish(topic=topic, payload=data)
+        MQTT_CLIENT.publish(topic=topic, payload=data)
 
     LOGGER.info("messages published")
-
-    client.disconnect()
-
-    LOGGER.info('Disconnected')
 
     color_1 = (randint(0, 255), randint(0, 255), randint(0, 255))
     color_2 = (randint(0, 255), randint(0, 255), randint(0, 255))
