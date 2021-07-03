@@ -172,7 +172,7 @@ def send_sensor_data(measurements=3):
         MQTT_CLIENT.will_set(topic, payload=None, qos=0, retain=True)
 
         LOGGER.info(f"Publishing msg: {msg} to topic: {topic}")
-        MQTT_CLIENT.publish(topic=topic, payload=data)
+        MQTT_CLIENT.publish(topic=topic, payload=data, retain=True)
 
     LOGGER.info("messages published")
 
