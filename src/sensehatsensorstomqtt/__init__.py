@@ -147,6 +147,28 @@ def send_sensor_data(measurements=3):
     for topic in topics:
         data = json.dumps(msg).encode('utf-8')
 
+        # WILL_SET()
+        # will_set(topic, payload=None, qos=0, retain=False)
+        # Set a Will to be sent to the broker. If the client disconnects without calling disconnect(), 
+        # the broker will publish the message on its behalf.
+        #
+        # topic
+        # the topic that the will message should be published on.
+        # payload
+        # the message to send as a will. If not given, or set to None a zero length message will be 
+        # used as the will. Passing an int or float will result in the payload being converted to a 
+        # string representing that number. If you wish to send a true int/float, use struct.pack() 
+        # to create the payload you require.
+        #
+        # qos
+        # the quality of service level to use for the will.
+        #
+        # retain
+        # if set to True, the will message will be set as the “last known good”/retained message for the topic.
+        # Raises a ValueError if qos is not 0, 1 or 2, or if topic is None or has zero string length.
+        #
+        MQTT_CLIENT.will_set(topic, payload=None, qos=0, retain=True)
+
         LOGGER.info(f"Publishing msg: {msg} to topic: {topic}")
         MQTT_CLIENT.publish(topic=topic, payload=data)
 
