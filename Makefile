@@ -1,5 +1,5 @@
 # Define phony targets
-.PHONY: venv activate deactivate clean lint install
+.PHONY: venv activate deactivate clean lint install setup_test test coverage_test run
 
 # Name of the virtual environment
 VENV_NAME = .
@@ -20,10 +20,22 @@ activate:
 
 # Install dependencies from requirements file
 install: venv activate
-	pip install -r $(REQUIREMENTS_FILE)
+	$(PYTHON_INTERPRETER) -m pip install -r $(REQUIREMENTS_FILE)
+
+run: venv activate
+	$(PYTHON_INTERPRETER) -m src.sensehatsensorstomqtt.__main__
 
 lint: venv activate
-	flake8 src/* --count --max-complexity=13 --max-line-length=127 --statistics
+	./bin/flake8 src/* --count --max-complexity=13 --max-line-length=127 --statistics
+
+setup_test: venv activate setup_test
+	$(PYTHON_INTERPRETER) -m pip install pytest pytest-cov pytest_mock flake8
+
+test: venv activate setup_test
+	./bin/pytest src/test/*.py
+
+coverage_test: venv activate setup_test
+	./bin/pytest --cov=src --cov-fail-under=80 --cov-report=term-missing src/tests/*.py
 
 # Deactivate virtual environment
 deactivate:
