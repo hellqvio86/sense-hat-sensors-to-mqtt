@@ -16,7 +16,9 @@ from .consts import SLEEP_TIME_IN_SECONDS
 from .utils import is_night
 
 
-def send_sensor_data(config: dict, measurements: int, mqtt_client: MqttClient) -> None:
+def send_sensor_data(
+    *, config: dict, mqtt_client: MqttClient, measurements: int = 3
+) -> None:
     """
     Takes measurements of temperature, humidity, and pressure using the Sense HAT module and publishes the results
     to an MQTT broker using the provided mqtt_client. Median values of each measurement are calculated based on
