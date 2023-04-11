@@ -12,7 +12,7 @@ from statistics import median
 from sense_hat import SenseHat
 from paho.mqtt.client import Client as MqttClient
 
-from .consts import SLEEP_TIME_IN_SECONDS
+from .consts import SLEEP_TIME_IN_SECONDS, MEASUREMENT_UNIT
 from .utils import is_night
 
 
@@ -49,7 +49,7 @@ def send_sensor_data(
             tmp.append(sensor_value)
             sleep(1)
         msg[sensor_type] = median(tmp)
-        msg[f"unit_of_{sensor_type}"] = getattr(sense, f"get_{sensor_type}_units")()
+        msg[f"unit_of_{sensor_type}"] = MEASUREMENT_UNIT[sensor_type]
 
     msg["time_utc"] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")
 
