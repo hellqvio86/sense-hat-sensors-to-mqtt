@@ -51,7 +51,7 @@ def send_sensor_data(
         msg[sensor_type] = median(tmp)
         msg[f"unit_of_{sensor_type}"] = MEASUREMENT_UNIT[sensor_type]
 
-    msg["time_utc"] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")
+    msg["time_utc"] = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")
 
     uri = f"mqtt://{username}:{password}@{host}:{port}"
 
