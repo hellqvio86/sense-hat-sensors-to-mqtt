@@ -88,3 +88,5 @@ def send_sensor_data(config: dict, measurements: int, mqtt_client: MqttClient) -
             f"{msg['temperature']:.2f} {msg['unit_of_temperature']}",
             text_colour=temperature_color,
         )
+    else:
+        logging.info("Not running text on display, night mode!")
