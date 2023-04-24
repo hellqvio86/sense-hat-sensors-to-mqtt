@@ -4,12 +4,11 @@ Utils
 import datetime
 
 
-def is_night():
+def is_night(*, current_time=datetime.datetime.now()):
     """
     Function to check if its night
     """
-    now = datetime.datetime.now()
-    if now.hour >= 6 and now.hour < 19:
+    if current_time.hour >= 6 and current_time.hour < 19:
         # Its not night
         return False
     else:

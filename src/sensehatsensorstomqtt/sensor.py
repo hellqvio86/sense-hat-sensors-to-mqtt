@@ -45,7 +45,9 @@ def send_sensor_data(
         tmp = []
         for i in range(measurements):
             sensor_value = getattr(sense, f"get_{sensor_type}")()
+
             logging.debug(f"{sensor_type} - measurement {i} value: {sensor_value}")
+
             tmp.append(sensor_value)
             sleep(1)
         msg[sensor_type] = median(tmp)
@@ -66,6 +68,7 @@ def send_sensor_data(
         data = json.dumps(msg).encode("utf-8")
 
         logging.info(f"Publishing msg: {msg} to topic: {topic}")
+
         mqtt_client.publish(topic=topic, payload=data, retain=True)
 
     logging.info("messages published")

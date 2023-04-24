@@ -28,8 +28,8 @@ run: venv activate
 lint: venv activate
 	./bin/flake8 src/* --count --max-complexity=13 --max-line-length=127 --statistics
 
-setup_test: venv activate setup_test
-	$(PYTHON_INTERPRETER) -m pip install pytest pytest-cov pytest_mock flake8
+setup_test: venv activate
+	$(PYTHON_INTERPRETER) -m pip install pytest pytest-cov pytest_mock flake8 sense-emu
 
 test: venv activate setup_test
 	./bin/pytest src/test/*.py

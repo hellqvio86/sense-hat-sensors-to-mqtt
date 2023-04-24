@@ -43,6 +43,9 @@ def parse_config(config_file: str = "config.yaml") -> dict:
     with open(config_file, "r", encoding="utf-8") as stream:
         config = yaml.safe_load(stream)
 
+        if config is None:
+            config = {}
+
     config.setdefault("debug", False)
     config.setdefault("port", 1883)
     config.setdefault("daemon", False)

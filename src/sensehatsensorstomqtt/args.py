@@ -7,7 +7,7 @@ import argparse
 from .config import parse_config
 
 
-def args_handler() -> dict:
+def args_handler(*, config_file: str = None) -> dict:
     """
     Function for reading arguments and config file
 
@@ -28,38 +28,40 @@ def args_handler() -> dict:
     parser.add_argument("--daemon", action="store_true")
     args = parser.parse_args()
 
-    if args.config_file:
+    if "config_file" in args and args.config_file:
         config = parse_config(config_file=args.config_file)
     elif os.path.exists("/etc/sensehatsensorstomqtt.yaml"):
         config = parse_config(config_file="/etc/sensehatsensorstomqtt.yaml")
+    elif config_file:
+        config = parse_config(config_file=config_file)
     else:
         config = parse_config()
 
-    if args.username:
+    if "username" in args and args.username:
         config["username"] = args.username
 
-    if args.password:
+    if "password" in args and args.password:
         config["password"] = args.password
 
-    if args.host:
+    if "host" in args and args.host:
         config["host"] = args.host
 
-    if args.port:
+    if "port" in args and args.port:
         config["port"] = args.port
 
-    if args.debug:
+    if "debug" in args and args.debug:
         config["debug"] = True
 
-    if args.log_file:
+    if "log_file" in args and args.log_file:
         config["log_file"] = args.log_file
 
-    if args.pid_file:
+    if "pid_file" in args and args.pid_file:
         config["pid_file"] = args.pid_file
 
-    if args.daemon:
+    if "daemon" in args and args.daemon:
         config["daemon"] = args.daemon
 
-    if args.topics:
+    if "topics" in args and args.topics:
         config["topics"] = [item.strip() for item in args.list.split(",")]
 
     if config["debug"]:
