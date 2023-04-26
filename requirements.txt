@@ -3,3 +3,4 @@ PyYAML==5.4.1             # import yaml
 setproctitle==1.2.2       # import setproctitle
 sense-hat==2.2.0          # import SenseHat
 psutil==5.9.4
+rtimulib
