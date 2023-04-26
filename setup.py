@@ -25,7 +25,7 @@ setup(
     python_requires=">=3.6",
     entry_points={
         "console_scripts": [
-            "sensehatsensorstomqtt = sensehatsensorstomqtt:__main__:main",
+            "sensehatsensorstomqtt = sensehatsensorstomqtt.__main__:main",
         ],
     },
     install_requires=["sense-hat", "paho-mqtt", "pyyaml", "setproctitle", "psutil"],
