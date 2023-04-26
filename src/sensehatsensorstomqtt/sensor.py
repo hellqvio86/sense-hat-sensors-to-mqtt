@@ -88,7 +88,7 @@ def send_sensor_data(
         )
         sleep(SLEEP_TIME_IN_SECONDS)
 
-        temperature_color = sense.get_color_for_temperature(msg["temperature"])
+        temperature_color = get_color_for_temperature(msg["temperature"])
 
         sense.show_message(
             f"{msg['temperature']:.2f} {msg['unit_of_temperature']}",
