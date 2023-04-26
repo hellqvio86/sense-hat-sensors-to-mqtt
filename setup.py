@@ -12,7 +12,7 @@ setup(
     name="sensehatsensorstomqtt",
     packages=find_packages("src"),
     package_dir={"": "src"},
-    version="0.003",
+    version="0.004",
     license="MIT",
     description="sense-hat sensors data to mqtt",
     long_description=long_description,
