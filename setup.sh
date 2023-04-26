@@ -21,7 +21,7 @@ if [ ! -f $BIN_FILE ]; then
 fi
 
 source ./bin/activate
-./bin/python3 -m pip install -e . .
+./bin/python3 -m pip install -e .
 
 echo "Installing systemd script"
 cp systemd/sensehatsensorstomqtt.service /etc/systemd/system/sensehatsensorstomqtt.service
