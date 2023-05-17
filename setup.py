@@ -28,7 +28,6 @@ setup(
             "sensehatsensorstomqtt = sensehatsensorstomqtt.main:main",
         ],
     },
-    scripts=["src/sensehatsensorstomqtt/main.py"],
     install_requires=["sense-hat", "paho-mqtt", "pyyaml", "setproctitle", "psutil"],
     extras_require={"tests": ["pyyaml", "pytest"]},
     classifiers=[
