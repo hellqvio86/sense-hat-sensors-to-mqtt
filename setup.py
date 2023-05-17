@@ -1,7 +1,4 @@
-# from distutils.core import setup
 from setuptools import setup, find_packages
-
-# read the contents of README file
 from os import path
 
 this_directory = path.abspath(path.dirname(__file__))
@@ -10,7 +7,7 @@ with open(path.join(this_directory, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="sensehatsensorstomqtt",
-    packages=find_packages("src"),
+    packages=find_packages("src") + ["sensehatsensorstomqtt"],
     package_dir={"": "src"},
     version="0.004",
     license="MIT",
@@ -28,6 +25,7 @@ setup(
             "sensehatsensorstomqtt = sensehatsensorstomqtt.main:main",
         ],
     },
+    scripts=["src/sensehatsensorstomqtt/main.py"],
     install_requires=["sense-hat", "paho-mqtt", "pyyaml", "setproctitle", "psutil"],
     extras_require={"tests": ["pyyaml", "pytest"]},
     classifiers=[
