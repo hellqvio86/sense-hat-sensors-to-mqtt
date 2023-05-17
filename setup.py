@@ -1,3 +1,6 @@
+import fileinput
+import sys
+
 from setuptools import setup, find_packages
 from os import path
 
@@ -37,3 +40,12 @@ setup(
         "Programming Language :: Python :: 3.6",
     ],
 )
+
+
+# Update the generated script with the correct shebang
+script_path = "bin/sensehatsensorstomqtt"
+
+for line in fileinput.input(script_path, inplace=True):
+    if fileinput.isfirstline():
+        print("#!/usr/bin/python3")
+    sys.stdout.write(line)
