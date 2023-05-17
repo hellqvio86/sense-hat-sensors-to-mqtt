@@ -39,6 +39,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
     ],
+    scripts=["bin/sensehatsensorstomqtt"],
 )
 
 
@@ -47,5 +48,10 @@ script_path = "bin/sensehatsensorstomqtt"
 
 for line in fileinput.input(script_path, inplace=True):
     if fileinput.isfirstline():
-        print("#!/usr/bin/python3")
-    sys.stdout.write(line)
+        if line.startswith("#!"):
+            print("#!/usr/bin/python3")
+        else:
+            print("#!/usr/bin/python3")
+            sys.stdout.write(line)
+    else:
+        sys.stdout.write(line)
