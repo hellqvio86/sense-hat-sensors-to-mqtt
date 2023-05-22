@@ -74,6 +74,8 @@ def send_sensor_data(
 
     logging.info("messages published")
 
+    logging.debug(f"is_night(): {is_night()}")
+
     if is_night() is False:
         color_1 = (randint(0, 255), randint(0, 255), randint(0, 255))
         color_2 = (randint(0, 255), randint(0, 255), randint(0, 255))
