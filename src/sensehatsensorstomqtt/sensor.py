@@ -1,6 +1,7 @@
 """
 Sensor
 """
+
 import datetime
 import logging
 import json
@@ -97,4 +98,5 @@ def send_sensor_data(
             text_colour=temperature_color,
         )
     else:
+        sense.clear()
         logging.info("Not running text on display, night mode!")
