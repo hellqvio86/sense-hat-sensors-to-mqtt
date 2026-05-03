@@ -5,7 +5,7 @@ PROJECT_NAME := sensehatsensorstomqtt
 all: install
 
 venv:
-	uv venv --allow-existing
+	uv venv --allow-existing --system-site-packages
 
 install: venv
 	uv pip install ruff

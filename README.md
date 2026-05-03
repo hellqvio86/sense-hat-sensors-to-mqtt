@@ -18,7 +18,7 @@ A python utility to publish data from Sense Hat sensors to an MQTT broker.
 Before installing, you must install the required system libraries to compile hardware dependencies (like `Pillow` for the Sense Hat):
 ```bash
 sudo apt-get update
-sudo apt-get install -y python3-dev libjpeg-dev zlib1g-dev libfreetype6-dev gcc cmake
+sudo apt-get install -y python3-dev libjpeg-dev zlib1g-dev libfreetype6-dev gcc cmake python3-sense-hat
 ```
 
 ## Installation & Setup
