@@ -22,6 +22,7 @@ classifiers = [
 ]
 keywords = ["sense-hat", "temperature", "mqtt"]
 dependencies = [
+    "numpy<2.0.0",
     "sense-hat",
     "paho-mqtt",
     "pyyaml",
