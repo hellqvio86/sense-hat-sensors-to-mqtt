@@ -14,6 +14,13 @@ A python utility to publish data from Sense Hat sensors to an MQTT broker.
 - `make` (optional, for simplified build commands)
 - `uv` (modern Python package manager, install with: `curl -LsSf https://astral.sh/uv/install.sh | sh`)
 
+### System Dependencies
+Before installing, you must install the required system libraries to compile hardware dependencies (like `Pillow` for the Sense Hat):
+```bash
+sudo apt-get update
+sudo apt-get install -y python3-dev libjpeg-dev zlib1g-dev libfreetype6-dev gcc
+```
+
 ## Installation & Setup
 
 We recommend using the included `Makefile` to handle creating a virtual environment and installing dependencies safely using `uv`.
