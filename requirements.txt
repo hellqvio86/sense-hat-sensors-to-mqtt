@@ -1,5 +1,5 @@
 paho-mqtt==1.6.1          # import paho.mqtt.client as mqtt
-PyYAML==5.4.1             # import yaml
+PyYAML==6.0.3             # import yaml
 setproctitle==1.2.2       # import setproctitle
 sense-hat==2.2.0          # import SenseHat
 psutil==5.9.4
