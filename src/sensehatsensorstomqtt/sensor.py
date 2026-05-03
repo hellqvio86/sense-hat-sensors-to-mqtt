@@ -69,7 +69,7 @@ def send_sensor_data(
     for topic in topics:
         data = json.dumps(msg).encode("utf-8")
 
-        logging.info(f"Publishing msg: {msg} to topic: {topic}")
+        logging.info(f"Publishing msg: {data.decode('utf-8')} to topic: {topic}")
 
         mqtt_client.publish(topic=topic, payload=data, retain=True)
 

@@ -18,7 +18,7 @@ from .args import args_handler
 from .sensor import send_sensor_data
 
 
-def main():
+def main() -> None:
     """Main function."""
     config = {}
 

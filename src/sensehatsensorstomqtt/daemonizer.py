@@ -13,7 +13,7 @@ class Daemonizer(object):
     '''
     _pid_file = None
 
-    def __init__(self, *, pid_file=None):
+    def __init__(self, pid_file: str = None) -> None:
         '''
         Constructor
         '''

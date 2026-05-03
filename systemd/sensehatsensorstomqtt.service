@@ -33,7 +33,7 @@ User=root
 Group=root
 
 #PIDFile=/run/enviroplussensorstomqtt/enviroplussensorstomqtt.pid
-StandardOutput=syslog
+StandardOutput=journal
 
 TimeoutStartSec=600
 

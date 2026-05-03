@@ -1,46 +1,37 @@
-# Define phony targets
-.PHONY: venv activate deactivate clean lint install setup_test test coverage_test run
+PROJECT_NAME := sensehatsensorstomqtt
 
-# Name of the virtual environment
-VENV_NAME = .
+.PHONY: all venv install test clean install-service
 
-# Python interpreter path
-PYTHON_INTERPRETER = python3
+all: install
 
-# Path to requirements file
-REQUIREMENTS_FILE = requirements.txt
-
-# Create virtual environment
 venv:
-	$(PYTHON_INTERPRETER) -m venv $(VENV_NAME)
+	uv venv --allow-existing
 
-# Activate virtual environment
-activate:
-	. $(VENV_NAME)/bin/activate
+install: venv
+	uv pip install ruff
+	uv pip install -e .[tests]
 
-# Install dependencies from requirements file
-install: venv activate
-	$(PYTHON_INTERPRETER) -m pip install -r $(REQUIREMENTS_FILE)
+test: install
+	uv run ruff check .
+	uv run pytest src/tests/
 
-run: venv activate
-	$(PYTHON_INTERPRETER) -m src.sensehatsensorstomqtt.__main__
-
-lint: venv activate
-	./bin/flake8 src/* --count --max-complexity=13 --max-line-length=127 --statistics
-
-setup_test: venv activate
-	$(PYTHON_INTERPRETER) -m pip install pytest pytest-cov pytest_mock flake8 sense-emu
-
-test: venv activate setup_test
-	./bin/pytest src/test/*.py
-
-coverage_test: venv activate setup_test
-	./bin/pytest --cov=src --cov-fail-under=80 --cov-report=term-missing src/tests/*.py
-
-# Deactivate virtual environment
-deactivate:
-	deactivate
-
-# Remove virtual environment
 clean:
-	rm -rf $(VENV_NAME)
+	rm -rf .venv
+	rm -rf *.egg-info
+	rm -rf dist build
+	find . -type f -name '*.pyc' -delete
+	find . -type d -name '__pycache__' -delete
+
+install-service:
+	@echo "Installing executable wrapper to /usr/local/bin/"
+	@echo '#!/bin/bash' > /tmp/$(PROJECT_NAME)
+	@echo 'exec $(CURDIR)/.venv/bin/$(PROJECT_NAME) "$$@"' >> /tmp/$(PROJECT_NAME)
+	sudo cp /tmp/$(PROJECT_NAME) /usr/local/bin/$(PROJECT_NAME)
+	sudo chmod +x /usr/local/bin/$(PROJECT_NAME)
+	rm -f /tmp/$(PROJECT_NAME)
+	@echo "Installing systemd service..."
+	sudo cp systemd/$(PROJECT_NAME).service /etc/systemd/system/
+	sudo systemctl daemon-reload
+	@echo "Service installed successfully."
+	@echo "Enable it with: sudo systemctl enable $(PROJECT_NAME)"
+	@echo "Start it with: sudo systemctl start $(PROJECT_NAME)"

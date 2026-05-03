@@ -34,7 +34,7 @@ COLOR_YELLOW = (255, 255, 0)
 COLOR_BLUE = (0, 0, 255)
 
 
-def get_color_for_temperature(temperature):
+def get_color_for_temperature(temperature: float) -> tuple[int, int, int]:
     '''
     Function for getting color based on temperature
     '''
