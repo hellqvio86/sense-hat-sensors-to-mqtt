@@ -57,14 +57,14 @@ def send_sensor_data(
 
     msg["time_utc"] = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")
 
-    uri = f"mqtt://{username}:{password}@{host}:{port}"
+    redacted_uri = f"mqtt://{username}:***@{host}:{port}"
 
-    logging.info(f"Connecting to {uri}")
+    logging.info(f"Connecting to {redacted_uri}")
 
     mqtt_client.username_pw_set(username, password=password)
     mqtt_client.connect(host, port, 60)
 
-    logging.info(f"Connected to {uri}")
+    logging.info(f"Connected to {redacted_uri}")
 
     for topic in topics:
         data = json.dumps(msg).encode("utf-8")
