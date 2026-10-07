@@ -23,8 +23,8 @@ def send_sensor_data(
     """
     Takes measurements of temperature, humidity, and pressure using the Sense HAT module and publishes the results
     to an MQTT broker using the provided mqtt_client. Median values of each measurement are calculated based on
-    the number of measurements specified. The data is published to each topic in the list of topics provided in the config
-    dictionary as a JSON-encoded string.
+    the number of measurements specified. The data is published to each topic in the list of
+    topics provided in the config dictionary as a JSON-encoded string.
 
     :param config: A dictionary containing the configuration parameters for the MQTT broker connection and the list of
                    topics to publish the data to.
