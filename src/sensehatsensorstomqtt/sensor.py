@@ -3,18 +3,17 @@ Sensor
 """
 
 import datetime
-import logging
 import json
-
+import logging
 from random import randint
-from time import sleep
 from statistics import median
+from time import sleep
 
-from sense_hat import SenseHat
 from paho.mqtt.client import Client as MqttClient
+from sense_hat import SenseHat
 
-from .consts import SLEEP_TIME_IN_SECONDS, MEASUREMENT_UNIT
 from .colors import get_color_for_temperature
+from .consts import MEASUREMENT_UNIT, SLEEP_TIME_IN_SECONDS
 from .utils import is_night
 
 

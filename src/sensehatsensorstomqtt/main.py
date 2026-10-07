@@ -5,16 +5,14 @@ to Home Assistant
 import logging
 import logging.handlers
 import time
-
 from time import sleep
 
 import paho.mqtt.client as mqtt
-
 from setproctitle import setproctitle
 
+from .args import args_handler
 from .daemonizer import Daemonizer
 from .logging import setup_logger
-from .args import args_handler
 from .sensor import send_sensor_data
 
 

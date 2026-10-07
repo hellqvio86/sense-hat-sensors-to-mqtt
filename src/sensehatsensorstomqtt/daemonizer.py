@@ -1,13 +1,14 @@
 import logging
 import os
-import sys
 import re
+import sys
+
 import psutil
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class Daemonizer(object):
+class Daemonizer:
     '''
     Class for Daemonizing a process
     '''
@@ -45,7 +46,7 @@ class Daemonizer(object):
         _LOGGER.debug(f'Setting up pidfile for PID {pid} to {self._pid_file}')
 
         if os.path.isfile(self._pid_file):
-            pid_desc = open(self._pid_file, 'r')
+            pid_desc = open(self._pid_file)
 
             pid = pid_desc.read()
             if re.match(r'^\d+$', pid):
@@ -70,7 +71,7 @@ class Daemonizer(object):
         stdin to /dev/null
         '''
         sys.stdin.close()
-        sys.stdin = open('/dev/null', 'r')
+        sys.stdin = open('/dev/null')
 
         sys.stdout.close()
         sys.stdout = open('/dev/null', 'w')
