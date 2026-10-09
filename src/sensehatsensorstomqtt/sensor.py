@@ -1,5 +1,7 @@
 """Sense HAT sensor reading, calibration, and MQTT publishing."""
 
+from __future__ import annotations
+
 import contextlib
 import datetime
 import json
