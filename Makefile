@@ -1,34 +1,35 @@
 PROJECT_NAME := sensehatsensorstomqtt
+PYTHON_BIN ?= python3
 
 .PHONY: all venv install test clean install-service
 
 all: install
 
 venv:
-	uv venv --allow-existing --system-site-packages --python /usr/bin/python3
+	uv venv --allow-existing --system-site-packages --python $(PYTHON_BIN)
 
 install: venv
-	uv pip install ruff
-	uv pip install -e .[tests]
+	uv sync --extra dev
 
-test: install
+test:
 	uv run ruff check .
-	uv run pytest src/tests/
+	uv run ruff format --check src tests
+	uv run mypy src
+	uv run pytest --cov=sensehatsensorstomqtt --cov-fail-under=80 tests/
 
 clean:
 	rm -rf .venv
-	rm -rf *.egg-info
+	rm -rf *.egg-info src/*.egg-info
 	rm -rf dist build
 	find . -type f -name '*.pyc' -delete
 	find . -type d -name '__pycache__' -delete
 
 install-service:
+	@echo "Ensuring sensehat system user exists..."
+	@id -u sensehat >/dev/null 2>&1 || sudo useradd -r -s /usr/sbin/nologin -G i2c,video,input sensehat || true
 	@echo "Installing executable wrapper to /usr/local/bin/"
-	@echo '#!/bin/bash' > /tmp/$(PROJECT_NAME)
-	@echo 'exec $(CURDIR)/.venv/bin/$(PROJECT_NAME) "$$@"' >> /tmp/$(PROJECT_NAME)
-	sudo cp /tmp/$(PROJECT_NAME) /usr/local/bin/$(PROJECT_NAME)
-	sudo chmod +x /usr/local/bin/$(PROJECT_NAME)
-	rm -f /tmp/$(PROJECT_NAME)
+	@printf '#!/bin/bash\nexec $(CURDIR)/.venv/bin/$(PROJECT_NAME) "$$@"\n' | sudo tee /usr/local/bin/$(PROJECT_NAME) > /dev/null
+	sudo chmod 755 /usr/local/bin/$(PROJECT_NAME)
 	@echo "Installing systemd service..."
 	sudo cp systemd/$(PROJECT_NAME).service /etc/systemd/system/
 	sudo systemctl daemon-reload

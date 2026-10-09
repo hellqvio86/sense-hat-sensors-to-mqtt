@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@1edb5228c4a0975dc950a14de0df78c4147f3ed8 # v5.3.0
+      with:
+        python-version: "3.11"
+
+    - name: Build Distribution Packages
+      run: uv build
+
+    - name: Verify Wheel Contents
+      run: |
+        python3 -c "
+        import glob, sys, zipfile
+        wheels = glob.glob('dist/*.whl')
+        assert len(wheels) == 1, f'Expected 1 wheel, found {len(wheels)}'
+        with zipfile.ZipFile(wheels[0]) as z:
+            names = z.namelist()
+            for n in names:
+                if not (n.startswith('sensehatsensorstomqtt/') or (n.startswith('sensehatsensorstomqtt-') and '.dist-info/' in n)):
+                    sys.exit(f'Forbidden file found in wheel: {n}')
+        print('Wheel contents verified clean.')
+        "
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@c95fe1489396fe8a9ec87454c6603b782430f890 # v2.2.1
+      with:
+        files: dist/*
+        generate_release_notes: true

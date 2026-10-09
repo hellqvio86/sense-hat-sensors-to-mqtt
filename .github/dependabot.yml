@@ -8,3 +8,9 @@ updates:
   - hellqvio86
   cooldown:
     default-days: 3
+- package-ecosystem: github-actions
+  directory: /
+  schedule:
+    interval: weekly
+  assignees:
+  - hellqvio86

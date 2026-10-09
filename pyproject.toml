@@ -4,40 +4,48 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sensehatsensorstomqtt"
-version = "0.0.4"
+version = "0.1.0"
 description = "sense-hat sensors data to mqtt"
 readme = "README.md"
 authors = [
   { name = "Olof Hellqvist", email = "olof.hellqvist@gmail.com" }
 ]
-license = { text = "MIT" }
+license = "MIT"
 requires-python = ">=3.11"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "Topic :: Software Development :: Build Tools",
-    "License :: OSI Approved :: MIT License",
+    "Topic :: Home Automation",
+    "Topic :: System :: Hardware",
+    "Topic :: System :: Monitoring",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 keywords = ["sense-hat", "temperature", "mqtt"]
 dependencies = [
-    "numpy<3.0.0",
-    "sense-hat",
-    "paho-mqtt",
-    "pyyaml",
-    "setproctitle",
-    "psutil",
+    "paho-mqtt>=2.0.0,<3.0.0",
+    "pyyaml>=6.0",
+    "sense-hat>=2.2.0,<3.0.0",
 ]
 
 [project.urls]
 Homepage = "https://github.com/hellqvio86/sense-hat-sensors-to-mqtt"
-Download = "https://github.com/hellqvio86/sense-hat-sensors-to-mqtt/archive/v_01.tar.gz"
+Repository = "https://github.com/hellqvio86/sense-hat-sensors-to-mqtt"
+Issues = "https://github.com/hellqvio86/sense-hat-sensors-to-mqtt/issues"
 
 [project.optional-dependencies]
 tests = [
-    "pyyaml",
     "pytest",
+    "pytest-cov",
+]
+dev = [
+    "mypy",
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "types-PyYAML",
 ]
 
 [project.scripts]
@@ -48,13 +56,28 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["sensehatsensorstomqtt*"]
+exclude = ["tests*"]
 
 [tool.ruff]
 line-length = 120
 target-version = "py311"
-src = ["src"]
+src = ["src", "tests"]
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I"]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "N", "RUF", "ARG"]
 ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S", "ARG", "SLF001"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "sense_hat"
+ignore_missing_imports = true
 
