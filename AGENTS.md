@@ -36,7 +36,7 @@ systemd/         unit file installed by `make install-service`
 Makefile         venv / install / test / clean / install-service
 pyproject.toml   setuptools build, ruff config, console script `sensehatsensorstomqtt`
 uv.lock          lockfile (installed from via uv sync)
-.github/         CI matrix (3.11-3.13) and Dependabot (uv & github-actions)
+.github/         CI matrix (3.11-3.15) and Dependabot (uv & github-actions)
 ```
 
 ## Commands
