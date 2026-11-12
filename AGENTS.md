@@ -88,7 +88,8 @@ Requires Python >= 3.11.
   do not copy that pattern. Lazy formatting (`LOGGER.info("x %s", y)`). No `print` for operational output.
 - Separate concerns when you touch `sensor.py`: *read sensors*, *build payload*, *publish*, *display*.
 - Use timezone-aware datetimes (`datetime.now(datetime.UTC)`), not `utcnow()`.
-- Commit messages: Conventional Commits (`fix:`, `feat:`, `chore:`, `test:`, `docs:`, `refactor:`).
+- Commit messages: Conventional Commits (`fix:`, `feat:`, `chore:`, `test:`, `docs:`, `refactor:`, `ci:`).
+- Git release tags: Always use Semantic Versioning with a leading `v` (e.g. `v0.1.0`, `v0.2.0`). Tags without `v` (e.g. `0.2.0`) are forbidden. CI generates draft releases based on `v<version>` from `pyproject.toml`.
 
 ## Things that will bite you
 

@@ -49,36 +49,105 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ---
 
-## Installation & Setup
+## Quick Start & Installation
 
-### 1. Fast Installation via `pipx` or `uv` (Recommended)
+Choose the deployment method that fits your use case:
 
-`sensehatsensorstomqtt` can be installed in an isolated environment or executed on the fly without cloning the source repository:
+### Option 1: Instant Test (No Installation Required)
 
-#### Using `pipx`:
+Try reading and publishing sensor readings immediately from PyPI without installing files to disk:
+
 ```bash
-# Install as an isolated CLI command with system site packages (for Sense HAT hardware access)
-pipx install --system-site-packages sensehatsensorstomqtt
+# Using uv (fastest):
+uvx sensehatsensorstomqtt --host 192.168.1.100 --topics home/sensors/sensehat
 
-# Or run directly on the fly
-pipx run --system-site-packages sensehatsensorstomqtt --help
+# Or using pipx:
+pipx run --system-site-packages sensehatsensorstomqtt --host 192.168.1.100 --topics home/sensors/sensehat
 ```
 
 > [!NOTE]
-> The `--system-site-packages` flag is required on Raspberry Pi OS so the isolated virtual environment can access native `RTIMULib` C bindings provided by the `python3-sense-hat` apt package.
+> The `--system-site-packages` flag is required by pipx on Raspberry Pi OS so Python can access the native `RTIMULib` C bindings provided by `python3-sense-hat`.
 
-#### Using `uv`:
+---
+
+### Option 2: Install as a User CLI Tool
+
+Install `sensehatsensorstomqtt` in an isolated virtual environment with the binary available in your `$PATH`:
+
 ```bash
-# Install globally into an isolated tool environment
+# Using uv:
 uv tool install sensehatsensorstomqtt
 
-# Or run directly on the fly via uvx
-uvx sensehatsensorstomqtt --help
+# Using pipx:
+pipx install --system-site-packages sensehatsensorstomqtt
+```
+
+Test your installation:
+```bash
+sensehatsensorstomqtt --help
 ```
 
 ---
 
-### 2. Developer / Git Installation
+### Option 3: Production Background Daemon (systemd)
+
+To run continuously in the background as a hardened, automatic `systemd` service:
+
+#### Step 1: Install the Executable to `/usr/local/bin`
+```bash
+# Method A: System-wide pipx (easiest without cloning git)
+sudo pipx install --global --system-site-packages sensehatsensorstomqtt
+
+# Method B: From git source repository (automated)
+git clone https://github.com/hellqvio86/sense-hat-sensors-to-mqtt.git
+cd sense-hat-sensors-to-mqtt
+make install
+sudo make install-service
+```
+
+#### Step 2: Configure the Service
+Create `/etc/sensehatsensorstomqtt.yaml` with restricted permissions:
+```bash
+sudo tee /etc/sensehatsensorstomqtt.yaml > /dev/null <<'EOF'
+host: "192.168.1.100"
+port: 1883
+topics:
+  - "home/sensors/sensehat"
+interval: 60.0
+measurements: 3
+compensate_cpu_temp: true
+display: true
+EOF
+
+sudo chmod 600 /etc/sensehatsensorstomqtt.yaml
+```
+
+#### Step 3: Install the systemd Service Unit
+*(Skip this step if you used `sudo make install-service` above)*
+
+```bash
+# Ensure dedicated unprivileged system user and hardware groups exist
+sudo id -u sensehat >/dev/null 2>&1 || sudo useradd -r -s /usr/sbin/nologin -G i2c,video,input sensehat
+
+# Download and install the service unit
+sudo curl -sSL https://raw.githubusercontent.com/hellqvio86/sense-hat-sensors-to-mqtt/main/systemd/sensehatsensorstomqtt.service -o /etc/systemd/system/sensehatsensorstomqtt.service
+```
+
+#### Step 4: Enable & Start the Service
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now sensehatsensorstomqtt
+```
+
+#### Step 5: Verify Status & Live Logs
+```bash
+sudo systemctl status sensehatsensorstomqtt
+journalctl -u sensehatsensorstomqtt -f
+```
+
+---
+
+### Developer / Local Source Installation
 
 Clone the repository and install into a local virtual environment:
 

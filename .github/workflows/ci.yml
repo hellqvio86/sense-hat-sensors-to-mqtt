@@ -5,13 +5,82 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  release:
+    types: [ published ]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
+  detect:
+    name: Detect Version & Release Needs
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.detect.outputs.version }}
+      tag: ${{ steps.detect.outputs.tag }}
+      should_release: ${{ steps.detect.outputs.should_release }}
+      should_publish_pypi: ${{ steps.detect.outputs.should_publish_pypi }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+
+      - name: Detect version and release status
+        id: detect
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+            VERSION="${TAG#v}"
+            echo "Release event for $TAG (version $VERSION)"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "tag=$TAG" >> $GITHUB_OUTPUT
+            echo "should_release=false" >> $GITHUB_OUTPUT
+            echo "should_publish_pypi=true" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            VERSION=$(grep -m 1 '^version =' pyproject.toml | cut -d '"' -f 2)
+            TAG="v$VERSION"
+            echo "Push event on main. Version: $VERSION ($TAG)"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+            TAG_EXISTS=false
+            if git ls-remote --tags origin "refs/tags/$TAG" | grep -q "refs/tags/$TAG"; then
+              TAG_EXISTS=true
+            fi
+
+            RELEASE_EXISTS=false
+            if gh release view "$TAG" >/dev/null 2>&1; then
+              RELEASE_EXISTS=true
+            fi
+
+            if [ "$TAG_EXISTS" = "true" ] && [ "$RELEASE_EXISTS" = "true" ]; then
+              echo "Both tag and release $TAG exist. Skipping draft release."
+              echo "should_release=false" >> $GITHUB_OUTPUT
+            else
+              echo "Release needed for $TAG (tag_exists=$TAG_EXISTS, release_exists=$RELEASE_EXISTS)."
+              echo "should_release=true" >> $GITHUB_OUTPUT
+            fi
+            echo "should_publish_pypi=false" >> $GITHUB_OUTPUT
+          else
+            VERSION=$(grep -m 1 '^version =' pyproject.toml | cut -d '"' -f 2)
+            echo "Non-release event (${{ github.event_name }} on ${{ github.ref }})."
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+            echo "should_release=false" >> $GITHUB_OUTPUT
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              echo "should_publish_pypi=true" >> $GITHUB_OUTPUT
+            else
+              echo "should_publish_pypi=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
   test:
+    name: Test & Quality Matrix
+    if: github.event_name != 'release'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -19,62 +88,118 @@ jobs:
         python-version: ["3.11", "3.12", "3.13"]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-    - name: Set up uv
-      uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
-      with:
-        python-version: ${{ matrix.python-version }}
-        enable-cache: true
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
 
-    - name: Install system dependencies
-      run: sudo apt-get update && sudo apt-get install -y systemd
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y systemd
 
-    - name: Install dependencies
-      run: uv sync --frozen --extra dev
+      - name: Install dependencies
+        run: uv sync --frozen --extra dev
 
-    - name: Run Ruff Linting
-      run: uv run ruff check .
+      - name: Run Ruff Linting
+        run: uv run ruff check .
 
-    - name: Run Ruff Formatting Check
-      run: uv run ruff format --check src tests
+      - name: Run Ruff Formatting Check
+        run: uv run ruff format --check src tests .github/scripts
 
-    - name: Run Type Checking (Mypy)
-      run: uv run mypy src
+      - name: Run Type Checking (Mypy)
+        run: uv run mypy src
 
-    - name: Run Tests with Coverage Gate
-      run: uv run pytest --cov=sensehatsensorstomqtt --cov-fail-under=80 tests/
+      - name: Run Tests with Coverage Gate
+        run: uv run pytest --cov=sensehatsensorstomqtt --cov-fail-under=80 tests/
 
-    - name: Verify systemd service unit
-      run: |
-        sed 's|/usr/local/bin/sensehatsensorstomqtt|/bin/sh|' systemd/sensehatsensorstomqtt.service > /tmp/test.service
-        systemd-analyze verify /tmp/test.service
+      - name: Verify systemd service unit
+        run: |
+          sed 's|/usr/local/bin/sensehatsensorstomqtt|/bin/sh|' systemd/sensehatsensorstomqtt.service > /tmp/test.service
+          systemd-analyze verify /tmp/test.service
 
-    - name: Build Package
-      run: uv build
+      - name: Build Package
+        run: uv build
 
-    - name: Check Package Metadata (Twine)
-      run: uv run --with twine twine check dist/*
+      - name: Check Package Metadata (Twine)
+        run: uv run --with twine twine check dist/*
 
-    - name: Verify Wheel Contents
-      run: |
-        python3 -c "
-        import glob, sys, zipfile
-        wheels = glob.glob('dist/*.whl')
-        assert len(wheels) == 1, f'Expected 1 wheel, found {len(wheels)}'
-        with zipfile.ZipFile(wheels[0]) as z:
-            names = z.namelist()
-            for n in names:
-                if not (n.startswith('sensehatsensorstomqtt/') or (n.startswith('sensehatsensorstomqtt-') and '.dist-info/' in n)):
-                    sys.exit(f'Forbidden file found in wheel: {n}')
-        print('Wheel contents verified clean.')
-        "
+      - name: Verify Wheel Contents
+        run: |
+          python3 -c "
+          import glob, sys, zipfile
+          wheels = glob.glob('dist/*.whl')
+          assert len(wheels) == 1, f'Expected 1 wheel, found {len(wheels)}'
+          with zipfile.ZipFile(wheels[0]) as z:
+              names = z.namelist()
+              for n in names:
+                  if not (n.startswith('sensehatsensorstomqtt/') or (n.startswith('sensehatsensorstomqtt-') and '.dist-info/' in n)):
+                      sys.exit(f'Forbidden file found in wheel: {n}')
+          print('Wheel contents verified clean.')
+          "
+
+  draft-release:
+    name: Create GitHub Draft Release
+    needs: [detect, test]
+    if: needs.detect.outputs.should_release == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          python-version: "3.11"
+
+      - name: Build Distribution Packages
+        run: uv build
+
+      - name: Create Git tag
+        run: |
+          TAG="${{ needs.detect.outputs.tag }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --tags origin "refs/tags/${TAG}" | grep -q "refs/tags/${TAG}"; then
+            echo "Tag ${TAG} already exists on origin; skipping git tag creation."
+          else
+            git tag -a "${TAG}" -m "Release ${TAG}"
+            git push origin "${TAG}"
+          fi
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          NOTES_FILE="${RUNNER_TEMP}/RELEASE_NOTES.md"
+          python3 .github/scripts/generate_release_notes.py "${{ needs.detect.outputs.tag }}" "${NOTES_FILE}"
+          echo "notes_path=${NOTES_FILE}" >> $GITHUB_OUTPUT
+          echo "Generated release notes:"
+          cat "${NOTES_FILE}"
+
+      - name: Create draft release
+        uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ef267fda # v2.2.1
+        with:
+          tag_name: ${{ needs.detect.outputs.tag }}
+          name: Release ${{ needs.detect.outputs.tag }}
+          draft: true
+          prerelease: false
+          body_path: ${{ steps.release_notes.outputs.notes_path }}
+          generate_release_notes: true
+          files: dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-pypi:
     name: Publish to PyPI
-    needs: test
-    if: github.ref == 'refs/heads/main'
+    needs: detect
+    if: needs.detect.outputs.should_publish_pypi == 'true'
     runs-on: ubuntu-latest
     environment:
       name: pypi
