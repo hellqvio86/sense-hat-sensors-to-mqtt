@@ -46,6 +46,35 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ## Installation & Setup
 
+### 1. Fast Installation via `pipx` or `uv` (Recommended)
+
+`sensehatsensorstomqtt` can be installed in an isolated environment or executed on the fly without cloning the source repository:
+
+#### Using `pipx`:
+```bash
+# Install as an isolated CLI command with system site packages (for Sense HAT hardware access)
+pipx install --system-site-packages sensehatsensorstomqtt
+
+# Or run directly on the fly
+pipx run --system-site-packages sensehatsensorstomqtt --help
+```
+
+> [!NOTE]
+> The `--system-site-packages` flag is required on Raspberry Pi OS so the isolated virtual environment can access native `RTIMULib` C bindings provided by the `python3-sense-hat` apt package.
+
+#### Using `uv`:
+```bash
+# Install globally into an isolated tool environment
+uv tool install sensehatsensorstomqtt
+
+# Or run directly on the fly via uvx
+uvx sensehatsensorstomqtt --help
+```
+
+---
+
+### 2. Developer / Git Installation
+
 Clone the repository and install into a local virtual environment:
 
 ```bash
