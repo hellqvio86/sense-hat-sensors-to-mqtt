@@ -4,7 +4,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/sensehatsensorstomqtt.svg?logo=python&logoColor=white)](https://pypi.org/project/sensehatsensorstomqtt/)
 [![CI](https://github.com/hellqvio86/sense-hat-sensors-to-mqtt/actions/workflows/ci.yml/badge.svg)](https://github.com/hellqvio86/sense-hat-sensors-to-mqtt/actions/workflows/ci.yml)
 [![Security Scan](https://github.com/hellqvio86/sense-hat-sensors-to-mqtt/actions/workflows/security.yml/badge.svg)](https://github.com/hellqvio86/sense-hat-sensors-to-mqtt/actions/workflows/security.yml)
-[![Coverage](https://img.shields.io/badge/coverage-87%25-brightgreen.svg?logo=pytest&logoColor=white)](https://github.com/hellqvio86/sense-hat-sensors-to-mqtt/actions/workflows/ci.yml)
+[![Coverage](coverage.svg)](https://github.com/hellqvio86/sense-hat-sensors-to-mqtt/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)

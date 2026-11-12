@@ -45,6 +45,7 @@ htmlcov/
 .nox/
 .coverage.*
 coverage.xml
+coverage.json
 *.cover
 *.py,cover
 
